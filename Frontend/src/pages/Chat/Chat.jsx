@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import "./Chat.css";
 import { FaSearch } from "react-icons/fa";
-
 import useChatStore from "../../store/useChatStore";
-
-import SidebarNav from "../../components/sidebarNav/SidebarNav";
+import SidebarNav from "../../components/SidebarNav/SidebarNav";
 import ChatList from "../../components/ChatList/ChatList";
 import ContactList from "../../components/ContactList/ContactList";
 import ChatContainer from "../../components/ChatContainer/ChatContainer";
