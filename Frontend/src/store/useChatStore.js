@@ -3,6 +3,15 @@ import toast from "react-hot-toast";
 import axiosInstance from "../lib/axios";
 import useAuthStore from "./useAuthStore";
 
+function isAuthError(error) {
+  return (
+    error?.response?.status === 401 ||
+    error?.response?.data?.message === "No token provided" ||
+    error?.response?.data?.message === "Invalid token" ||
+    error?.response?.data?.message === "User not found"
+  );
+}
+
 export const useChatStore = create((set, get) => ({
   allContacts: [],
   chats: [],
@@ -24,7 +33,10 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get("/messages/contacts");
       set({ allContacts: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load contacts");
+      if (!isAuthError(error)) {
+        toast.error(error.response?.data?.message || "Failed to load contacts");
+      }
+      set({ allContacts: [] });
     } finally {
       set({ isUsersLoading: false });
     }
@@ -37,7 +49,10 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get("/messages/chats");
       set({ chats: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to load chats");
+      if (!isAuthError(error)) {
+        toast.error(error.response?.data?.message || "Failed to load chats");
+      }
+      set({ chats: [] });
     } finally {
       set({ isUsersLoading: false });
     }
@@ -50,7 +65,10 @@ export const useChatStore = create((set, get) => ({
       const res = await axiosInstance.get(`/messages/${userId}`);
       set({ messages: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      if (!isAuthError(error)) {
+        toast.error(error.response?.data?.message || "Something went wrong");
+      }
+      set({ messages: [] });
     } finally {
       set({ isMessagesLoading: false });
     }
