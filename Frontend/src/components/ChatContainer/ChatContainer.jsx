@@ -14,6 +14,8 @@ function ChatContainer() {
     messages = [],
     isMessagesLoading,
     getMessagesByUserId,
+    subscribeToMessages,
+    unsubscribeFromMessages,
   } = useChatStore();
 
   const { authUser } = useAuthStore();
@@ -26,6 +28,18 @@ function ChatContainer() {
       getMessagesByUserId(selectedUser._id);
     }
   }, [selectedUser, getMessagesByUserId]);
+
+  useEffect(() => {
+    if (!selectedUser?._id) {
+      return undefined;
+    }
+
+    subscribeToMessages();
+
+    return () => {
+      unsubscribeFromMessages();
+    };
+  }, [selectedUser?._id, subscribeToMessages, unsubscribeFromMessages]);
 
   /* Auto scroll to bottom */
   useEffect(() => {
@@ -56,7 +70,7 @@ function ChatContainer() {
         ) : (
           messages.map((msg) => {
 
-            const isOwnMessage = msg.senderId === authUser._id;
+            const isOwnMessage = String(msg.senderId) === String(authUser?._id);
 
             return (
               <div

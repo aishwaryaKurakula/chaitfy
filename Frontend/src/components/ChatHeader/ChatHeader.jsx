@@ -6,23 +6,23 @@ import "./ChatHeader.css";
 
 function ChatHeader() {
   const { selectedUser, setSelectedUser } = useChatStore();
-  const { onlineUsers } = useAuthStore();
-  console.log("onlineUsers:", onlineUsers);
-console.log("type:", typeof onlineUsers);
-
-  if (!selectedUser) return null;
-
-  const isOnline = onlineUsers.includes(selectedUser._id);
+  const { onlineUsers = [] } = useAuthStore();
 
   useEffect(() => {
     const handleEscKey = (event) => {
-      if (event.key === "Escape") setSelectedUser(null);
+      if (event.key === "Escape") {
+        setSelectedUser(null);
+      }
     };
 
     window.addEventListener("keydown", handleEscKey);
 
     return () => window.removeEventListener("keydown", handleEscKey);
   }, [setSelectedUser]);
+
+  if (!selectedUser) return null;
+
+  const isOnline = onlineUsers.map(String).includes(String(selectedUser._id));
 
   return (
     <div className="chat-header">

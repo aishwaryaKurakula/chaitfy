@@ -2,7 +2,7 @@ const Message = require("../models/message.js");
 const User = require("../models/User.js");
 const cloudinary = require("../lib/cloudinary");
 const mongoose = require("mongoose");
-const { getReceiverSocketId } = require("../lib/socket.js");
+const { emitToUser } = require("../lib/socket.js");
 
 const getAllContacts = async (req, res) => {
   try {
@@ -89,10 +89,7 @@ const sendMessage = async (req, res) => {
     });
     await newMessage.save();
 
-    const receiverSocketId = getReceiverSocketId(receiverId)
-      if(receiverSocketId){
-        io.to(receiverSocketId).emit("newMessage",newMessage)
-      }
+    emitToUser(receiverId, "newMessage", newMessage);
     
     res.status(201).json(newMessage);
   } catch (error) {

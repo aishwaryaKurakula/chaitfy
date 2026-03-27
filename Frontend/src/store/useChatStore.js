@@ -1,10 +1,9 @@
 import { create } from "zustand";
-import axiosInstance from "../lib/axios";
 import toast from "react-hot-toast";
-import useAuthStore from "../store/useAuthStore";
-// Chat store
+import axiosInstance from "../lib/axios";
+import useAuthStore from "./useAuthStore";
+
 export const useChatStore = create((set, get) => ({
-  // State
   allContacts: [],
   chats: [],
   messages: [],
@@ -12,10 +11,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUsersLoading: true,
   isMessagesLoading: false,
-  onlineUsers: [],
-
-  // Actions
-  setOnlineUsers: (users) => set({ onlineUsers: users }),
+  messageListenerAttachedTo: null,
 
   setActiveTab: (tab) => set({ activeTab: tab }),
 
@@ -23,9 +19,10 @@ export const useChatStore = create((set, get) => ({
 
   getAllContacts: async () => {
     set({ isUsersLoading: true });
+
     try {
       const res = await axiosInstance.get("/messages/contacts");
-      set({ allContacts: res.data });
+      set({ allContacts: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to load contacts");
     } finally {
@@ -35,9 +32,10 @@ export const useChatStore = create((set, get) => ({
 
   getMyChatPartners: async () => {
     set({ isUsersLoading: true });
+
     try {
       const res = await axiosInstance.get("/messages/chats");
-      set({ chats: res.data });
+      set({ chats: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to load chats");
     } finally {
@@ -47,9 +45,10 @@ export const useChatStore = create((set, get) => ({
 
   getMessagesByUserId: async (userId) => {
     set({ isMessagesLoading: true });
+
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
-      set({ messages: res.data });
+      set({ messages: Array.isArray(res.data) ? res.data : [] });
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
@@ -58,40 +57,105 @@ export const useChatStore = create((set, get) => ({
   },
 
   sendMessage: async (messageData) => {
-    const { selectedUser, messages } = get();
+    const { selectedUser } = get();
     const { authUser } = useAuthStore.getState();
 
-    // Temporary optimistic message
+    if (!selectedUser?._id || !authUser?._id) {
+      toast.error("Select a user before sending a message");
+      return;
+    }
+
     const tempId = `temp-${Date.now()}`;
     const optimisticMessage = {
       _id: tempId,
       senderId: authUser._id,
       receiverId: selectedUser._id,
-      text: messageData.text,
-      image: messageData.image,
+      text: messageData.text || "",
+      image: messageData.image || "",
       createdAt: new Date().toISOString(),
       isOptimistic: true,
     };
 
-    // Immediately update UI
-    set({ messages: [...messages, optimisticMessage] });
+    set((state) => ({
+      messages: [...state.messages, optimisticMessage],
+    }));
 
     try {
       const res = await axiosInstance.post(
         `/messages/send/${selectedUser._id}`,
-        messageData
+        messageData,
       );
-      set({ messages: [...messages, res.data] });
+
+      set((state) => ({
+        messages: state.messages.map((message) =>
+          message._id === tempId ? res.data : message,
+        ),
+      }));
     } catch (error) {
-      // Remove optimistic message if failed
-      set({ messages: messages });
+      set((state) => ({
+        messages: state.messages.filter((message) => message._id !== tempId),
+      }));
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   },
 
-  
-  
-  
+  subscribeToMessages: () => {
+    const socket = useAuthStore.getState().socket;
+    const { messageListenerAttachedTo } = get();
+
+    if (!socket) {
+      return;
+    }
+
+    if (messageListenerAttachedTo === socket.id) {
+      return;
+    }
+
+    const handleNewMessage = (newMessage) => {
+      const { selectedUser } = get();
+      const selectedUserId = selectedUser?._id;
+
+      if (!selectedUserId) {
+        return;
+      }
+
+      const senderId = String(newMessage.senderId);
+      const receiverId = String(newMessage.receiverId);
+      const activeUserId = String(selectedUserId);
+
+      if (senderId !== activeUserId && receiverId !== activeUserId) {
+        return;
+      }
+
+      set((state) => {
+        const alreadyExists = state.messages.some(
+          (message) => message._id === newMessage._id,
+        );
+
+        if (alreadyExists) {
+          return state;
+        }
+
+        return { messages: [...state.messages, newMessage] };
+      });
+    };
+
+    socket.off("newMessage");
+    socket.on("newMessage", handleNewMessage);
+    set({ messageListenerAttachedTo: socket.id });
+  },
+
+  unsubscribeFromMessages: () => {
+    const socket = useAuthStore.getState().socket;
+
+    if (!socket) {
+      set({ messageListenerAttachedTo: null });
+      return;
+    }
+
+    socket.off("newMessage");
+    set({ messageListenerAttachedTo: null });
+  },
 }));
 
 export default useChatStore;

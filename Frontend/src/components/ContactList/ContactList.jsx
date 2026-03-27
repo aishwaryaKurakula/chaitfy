@@ -12,7 +12,7 @@ function ContactList() {
     isUsersLoading,
   } = useChatStore();
 
-  const { onlineUsers } = useAuthStore();
+  const { onlineUsers = [] } = useAuthStore();
 
   useEffect(() => {
     getAllContacts();
@@ -31,7 +31,7 @@ function ContactList() {
           <div className="contact-content">
             <div
               className={`avatar ${
-                onlineUsers?.includes(contact._id)
+                onlineUsers.map(String).includes(String(contact._id))
                   ? "online"
                   : "offline"
               }`}

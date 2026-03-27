@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Chat from "./pages/Chat/Chat";
 import Login from "./pages/Login/Login";
 import Signup from "./pages/SignUp/Signup";
@@ -11,13 +11,13 @@ import { ToastContainer } from "react-toastify";
 
 function App() {
   const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
+  const location = useLocation();
 
- // ADD the pathname check
-useEffect(() => {
-  if (location.pathname !== '/login' && location.pathname !== '/signup') {
-    checkAuth();
-  }
-}, [location.pathname]);
+  useEffect(() => {
+    if (location.pathname !== "/login" && location.pathname !== "/signup") {
+      checkAuth();
+    }
+  }, [checkAuth, location.pathname]);
  
  
 

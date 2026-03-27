@@ -1,7 +1,6 @@
 import React from "react";
 import {
   FaComments,
-  FaUsers,
   FaAddressBook,
   FaCog,
   FaSignOutAlt,

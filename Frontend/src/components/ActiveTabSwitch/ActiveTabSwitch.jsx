@@ -1,27 +1,13 @@
-import React from 'react'
+import useChatStore from "../../store/useChatStore";
 
 function ActiveTabSwitch() {
   const { activeTab } = useChatStore();
 
-  switch (activeTab) {
-    case "chats":
-      return <Chats />;
-
-    case "users":
-      return <Users />;
-
-    case "contacts":
-      return <Contacts />;
-
-    case "settings":
-      return <Settings />;
-
-    default:
-      return <Chats />;
-  }
+  return (
+    <div className="active-tab-switch" data-active-tab={activeTab}>
+      {activeTab}
+    </div>
+  );
 }
 
-
-
-
-export default ActiveTabSwitch
+export default ActiveTabSwitch;

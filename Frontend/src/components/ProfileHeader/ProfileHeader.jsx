@@ -3,9 +3,13 @@ import useAuthStore from '../../store/useAuthStore';
 import "./ProfileHeader.css";
 
 function ProfileHeader() {
-  const { logout, authUser, updateProfile } = useAuthStore();
+  const { authUser, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
   const fileInputRef = useRef(null);
+
+  if (!authUser) {
+    return null;
+  }
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -28,7 +32,7 @@ function ProfileHeader() {
           <img
             src={selectedImg || authUser.profilePic || "/avatar.png"}
             alt="user"
-            onClick={() => fileInputRef.current.click()}
+            onClick={() => fileInputRef.current?.click()}
           />
           <span className="avatar-overlay">Change</span>
         </div>
