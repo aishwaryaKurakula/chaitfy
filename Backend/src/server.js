@@ -15,40 +15,58 @@ dotenv.config();
 
 const PORT = ENV.PORT || 3000;
 
-const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://chaitfy.onrender.com",    
+  "https://chaitfy.vercel.app",      
+  process.env.FRONTEND_URL,          
+].filter(Boolean); 
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.warn(`CORS blocked for origin: ${origin}`);
       return callback(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true,
   })
 );
 
-
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-// Keep this after CORS and parsers
-// app.use(arcjetProtection);
+app.use(arcjetProtection);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 if (ENV.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../../Frontend/dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../Frontend/dist/index.html"));
-  });
+  const frontendPath = path.join(__dirname, "../../Frontend/dist");
+  const fs = require("fs");
+
+  if (fs.existsSync(frontendPath)) {
+    app.use(express.static(frontendPath));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(frontendPath, "index.html"));
+    });
+  } else {
+    console.log("Frontend dist folder not found — skipping static file serving");
+  }
 }
 
 server.listen(PORT, async () => {
   try {
     await connectDB();
-    // console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT} in ${ENV.NODE_ENV} mode`);
   } catch (error) {
     console.error("Failed to start server:", error);
     process.exit(1);
