@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Chat from "./pages/Chat/Chat";
 import Login from "./pages/Login/Login";
-import Signup from "./pages/Signup/Signup";
+import Signup from "./pages/SignUp/Signup";
 import Settings from "./pages/Settings/Settings";
 import useAuthStore from "./store/useAuthStore";
 import PageLoader from "./components/PageLoader/PageLoader";
