@@ -1,15 +1,11 @@
 import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
-
 import Chat from "./pages/Chat/Chat";
-import Login from "./pages/Login/login";
+import Login from "./pages/Login/Login";
 import Signup from "./pages/signup/Signup";
 import Settings from "./pages/Settings/Settings";
-
 import useAuthStore from  "./store/useAuthStore";
-
 import PageLoader from "./components/PageLoader/PageLoader";
-
 import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
 
