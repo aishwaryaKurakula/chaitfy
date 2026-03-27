@@ -5,7 +5,7 @@ import "./PageLoader.css";
 function PageLoader() {
   return (
     <div className="loader-container">
-      <LoaderIcon className="spin-icon" size={40} />
+      <LoaderIc on className="spin-icon" size={40} />
     </div>
   );
 }
