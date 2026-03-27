@@ -12,9 +12,14 @@ import { ToastContainer } from "react-toastify";
 function App() {
   const { checkAuth, isCheckingAuth, authUser } = useAuthStore();
 
-  useEffect(() => {
+ // ADD the pathname check
+useEffect(() => {
+  if (location.pathname !== '/login' && location.pathname !== '/signup') {
     checkAuth();
-  }, [checkAuth]);
+  }
+}, [location.pathname]);
+ 
+ 
 
   if (isCheckingAuth) return <PageLoader />;
 

@@ -27,25 +27,32 @@ const useAuthStore = create((set, get) => ({
   },
 
   /* ================= CHECK AUTH ================= */
-  checkAuth: async () => {
-    set({ isCheckingAuth: true });
-    try {
-      const res = await axiosInstance.get("/auth/check");
-      const user = res.data?.user;
-      const token = localStorage.getItem("token");
+ checkAuth: async () => {
+  const token = localStorage.getItem("token"); // ← ADD THIS
+  if (!token) {                                 // ← ADD THIS
+    set({ isCheckingAuth: false });             // ← ADD THIS
+    return;                                     // ← ADD THIS
+  }                                             // ← ADD THIS
+  
+  set({ isCheckingAuth: true });
+  try {
+    const res = await axiosInstance.get("/auth/check");
+    const user = res.data?.user;
 
-      if (!user) throw new Error("No user found");
+    if (!user) throw new Error("No user found");
 
-      set({ authUser: { ...user, token: token || null } });
+    set({ authUser: { ...user, token } });
       get().connectSocket();
-    } catch (error) {
-      console.error("CheckAuth error:", error);
-      set({ authUser: null });
-      get().disconnectSocket();
-    } finally {
-      set({ isCheckingAuth: false });
-    }
-  },
+  } catch (error) {
+    console.error("CheckAuth error:", error);
+    set({ authUser: null });
+    get().disconnectSocket();
+  } finally {
+    set({ isCheckingAuth: false });
+  }
+},
+ 
+  
 
   /* ================= SIGNUP ================= */
   signup: async (data) => {
