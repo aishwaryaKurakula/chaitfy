@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./chat.css";
+import "./Chat.css";
 import { FaSearch } from "react-icons/fa";
 
 import useChatStore from "../../store/useChatStore";

@@ -1,6 +1,6 @@
 import React from "react";
 import { LoaderIcon } from "lucide-react";
-import "./pageLoader.css";
+import "./PageLoader.css";
 
 function PageLoader() {
   return (
