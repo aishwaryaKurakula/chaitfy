@@ -1,25 +1,24 @@
 import { create } from "zustand";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
-import axiosInstance from "../lib/axios";
+import axiosInstance, { BACKEND_ORIGIN } from "../lib/axios";
 
 function getSocketUrl() {
   const envSocketUrl = import.meta.env.VITE_SOCKET_URL;
-  const envApiUrl = import.meta.env.VITE_API_URL;
 
   if (envSocketUrl) {
     return envSocketUrl.replace(/\/$/, "");
   }
 
-  if (envApiUrl) {
-    return envApiUrl.replace(/\/api\/?$/, "");
+  if (BACKEND_ORIGIN) {
+    return BACKEND_ORIGIN.replace(/\/$/, "");
   }
 
   if (import.meta.env.MODE === "development") {
     return "http://localhost:3000";
   }
 
-  return window.location.origin;
+  return null;
 }
 
 const SOCKET_URL = getSocketUrl();
@@ -224,7 +223,10 @@ const useAuthStore = create((set, get) => ({
     const existingSocket = get().socket;
     const token = get().authUser?.token || localStorage.getItem("token");
 
-    if (!token) {
+    if (!token || !SOCKET_URL) {
+      if (!SOCKET_URL && import.meta.env.MODE !== "development") {
+        console.warn("Socket connection skipped: backend socket URL is not configured");
+      }
       return;
     }
 
@@ -240,9 +242,10 @@ const useAuthStore = create((set, get) => ({
     const socket = io(SOCKET_URL, {
       auth: { token },
       withCredentials: true,
-      transports: ["websocket", "polling"],
+      transports: ["polling", "websocket"],
+      upgrade: true,
       reconnection: true,
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 3,
       timeout: 10000,
     });
 
@@ -261,7 +264,7 @@ const useAuthStore = create((set, get) => ({
 
     socket.on("connect_error", (error) => {
       const message = error?.message || "Socket connection failed";
-      console.error("Socket connection error:", message);
+      console.error(`Socket connection error (${SOCKET_URL}):`, message);
     });
 
     set({ socket });

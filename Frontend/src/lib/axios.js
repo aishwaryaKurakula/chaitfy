@@ -17,8 +17,11 @@ function normalizeApiBaseUrl() {
   return `${window.location.origin}/api`;
 }
 
+export const API_BASE_URL = normalizeApiBaseUrl();
+export const BACKEND_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, "");
+
 export const axiosInstance = axios.create({
-  baseURL: normalizeApiBaseUrl(),
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
