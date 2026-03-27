@@ -1,73 +1,49 @@
+const { Server } = require("socket.io");
+const http = require("http");
 const express = require("express");
-const dotenv = require("dotenv");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const path = require("path");
+const ENV = require("./env.js");
+const socketAuthMiddleware = require("../middleware/socket.auth.middleware");
 
-const authRoutes = require("./routes/auth.route.js");
-const messageRoutes = require("./routes/message.route.js");
-const connectDB = require("./lib/db.js");
-const ENV = require("./lib/env.js");
-const arcjetProtection = require("./middleware/arcjet.middleware.js");
-const { app, server } = require("./lib/socket.js");
+const app = express();
+const server = http.createServer(app);
 
-dotenv.config();
-
-const PORT = ENV.PORT || 3000;     
+const userSocketMap = {};
 
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  "https://chaitfy.netlify.app",     
-  process.env.FRONTEND_URL,          
+  "https://chaitfy.netlify.app",  // ✅ matches your app.js
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      // Allow requests with no origin (mobile apps, curl, Postman)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      console.warn(`CORS blocked for origin: ${origin}`);
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,        // ✅ dynamic list, not a single hardcoded string
+    methods: ["GET", "POST"],
     credentials: true,
-  })
-);
+  },
+});
 
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-app.use(cookieParser());
+io.use(socketAuthMiddleware);
 
-app.use(arcjetProtection);
-
-app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
-
-if (ENV.NODE_ENV === "production") {
-  const frontendPath = path.join(__dirname, "../../Frontend/dist");
-  const fs = require("fs");
-
-  if (fs.existsSync(frontendPath)) {
-    app.use(express.static(frontendPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(frontendPath, "index.html"));
-    });
-  } else {
-    console.log("Frontend dist folder not found — skipping static file serving");
-  }
+function getReceiverSocketId(userId) {
+  return userSocketMap[userId];
 }
 
-server.listen(PORT, async () => {
-  try {
-    await connectDB();
-    console.log(`Server running on port ${PORT} in ${ENV.NODE_ENV} mode`);
-  } catch (error) {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  }
+io.on("connection", (socket) => {
+  if (!socket.user) return;
+
+  const userId = socket.user._id.toString();
+  console.log("User connected:", socket.user.username);
+
+  userSocketMap[userId] = socket.id;
+  io.emit("onlineUsers", Object.keys(userSocketMap));
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.user.username);
+    delete userSocketMap[userId];
+    io.emit("onlineUsers", Object.keys(userSocketMap));
+  });
 });
+
+module.exports = { io, app, server, getReceiverSocketId };

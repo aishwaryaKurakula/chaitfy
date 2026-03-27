@@ -3,11 +3,12 @@ const http = require("http");
 const express = require("express");
 const ENV = require("./env.js");
 const socketAuthMiddleware = require("../middleware/socket.auth.middleware");
+
 const app = express();
 const server = http.createServer(app);
 
 // Store online users: { userId: socketId }
-const userSocketMap = new Map();
+const userSocketMap = {}; // plain object — consistent with bracket access
 
 // Initialize Socket.io
 const io = new Server(server, {
@@ -20,10 +21,6 @@ const io = new Server(server, {
 // Middleware to authenticate socket connection
 io.use(socketAuthMiddleware);
 
- function getReceiverSocketId(userId) {
-  return userSocketMap[userId]
-}
-
 // Helper to get a receiver's socket ID by userId
 function getReceiverSocketId(userId) {
   return userSocketMap[userId];
@@ -31,12 +28,10 @@ function getReceiverSocketId(userId) {
 
 // Listen for connections
 io.on("connection", (socket) => {
-  console.log("connected")
   if (!socket.user) return;
 
   const userId = socket.user._id.toString();
   console.log("User connected:", socket.user.username);
-
 
   // Add user to online map
   userSocketMap[userId] = socket.id;
