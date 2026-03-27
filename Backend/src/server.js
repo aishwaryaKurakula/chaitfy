@@ -13,15 +13,14 @@ const { app, server } = require("./lib/socket.js");
 
 dotenv.config();
 
-const PORT = ENV.PORT || 3000;
+const PORT = ENV.PORT || 3000;     
 
 const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  "https://chaitfy.onrender.com",    
-  "https://chaitfy.vercel.app",      
+  "https://chaitfy.netlify.app",     
   process.env.FRONTEND_URL,          
-].filter(Boolean); 
+].filter(Boolean);
 
 app.use(
   cors({
