@@ -12,6 +12,8 @@ function getAllowedOrigins() {
     "http://127.0.0.1:5174",
     "https://chaitfy.netlify.app",
     "https://chatify.netlify.app",
+    "https://chaitfy.onrender.com",
+    "https://chatify.onrender.com",
     ENV.CLIENT_URL,
     process.env.FRONTEND_URL,
   ]
@@ -26,7 +28,16 @@ function isAllowedOrigin(origin) {
     return true;
   }
 
-  return getAllowedOrigins().includes(normalizeOrigin(origin));
+  const normalized = normalizeOrigin(origin);
+
+  // allow common preview hosts that may use subdomains or path variations
+  const genericAllowed = /^(https?:\/\/)?([a-z0-9-]+\.)?(netlify\.app|onrender\.com)$/i;
+
+  if (genericAllowed.test(normalized)) {
+    return true;
+  }
+
+  return getAllowedOrigins().includes(normalized);
 }
 
 module.exports = {

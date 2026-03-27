@@ -11,7 +11,19 @@ function getSocketUrl() {
   }
 
   if (BACKEND_ORIGIN) {
-    return BACKEND_ORIGIN.replace(/\/$/, "");
+    const normalized = BACKEND_ORIGIN.replace(/\/$/, "");
+
+    if (
+      normalized === window.location.origin &&
+      import.meta.env.MODE !== "development"
+    ) {
+      console.warn(
+        "VITE_SOCKET_URL is not set and BACKEND_ORIGIN matches frontend host. " +
+          "If backend is on a different domain, set VITE_SOCKET_URL to backend URL.",
+      );
+    }
+
+    return normalized;
   }
 
   if (import.meta.env.MODE === "development") {
@@ -22,6 +34,7 @@ function getSocketUrl() {
 }
 
 const SOCKET_URL = getSocketUrl();
+console.info("[CHATIFY] SOCKET_URL resolved to:", SOCKET_URL);
 
 const useAuthStore = create((set, get) => ({
   authUser: null,
