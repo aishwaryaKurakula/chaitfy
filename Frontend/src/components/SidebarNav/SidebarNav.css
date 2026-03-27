@@ -1,0 +1,74 @@
+/* Sidebar Container */
+.sidebar-nav {
+  width: 85px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+
+  /* Light theme (matches login page left side) */
+  background:lightblue;
+  border-right: 1px solid #e2e8f0;
+}
+
+/* Nav Items */
+.nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Icon Buttons */
+.nav-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #38bdf8;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+}
+
+/* Hover Effect (same gradient as login right side) */
+.nav-icon:hover {
+  transform: translateY(-0.5px) scale(1.02);
+  background:#38bdf8;
+  color: #ffffff;
+}
+.nav-icon.active {
+  background:#38bdf8 ;
+  color: white;
+  transform: scale(1.08);
+}
+
+/* Logout Button */
+.logout-btn {
+  margin-bottom: 10px;
+  color: #0284c7;
+}
+
+/* Logout Hover */
+.logout-btn:hover {
+  background: #0ea5e9;
+  color: white;
+
+  box-shadow:
+    0 6px 15px rgba(34, 211, 238, 0.4),
+    0 0 20px rgba(14, 165, 233, 0.3);
+}
+
+/* Icon animation */
+.nav-icon svg {
+  transition: transform 0.25s ease;
+}
+
+.nav-icon:hover svg {
+  transform: scale(1.15);
+}

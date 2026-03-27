@@ -1,0 +1,44 @@
+/* Container for all skeleton messages */
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* space between messages */
+  padding: 16px;
+}
+
+/* Each message wrapper */
+.skeleton-message {
+  display: flex;
+  max-width: 70%;
+}
+
+/* Align messages to left or right */
+.skeleton-message.left {
+  justify-content: flex-start;
+}
+
+.skeleton-message.right {
+  justify-content: flex-end;
+}
+
+/* The skeleton bubble */
+.skeleton-bubble {
+  width: 150px;
+  height: 40px;
+  background-color: #e0e0e0; /* light grey */
+  border-radius: 16px;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+/* Pulsing animation to indicate loading */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}

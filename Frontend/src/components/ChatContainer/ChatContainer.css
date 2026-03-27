@@ -1,0 +1,130 @@
+/* Wrapper */
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f8fafc; /* same as login */
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Chat Body */
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+  background: linear-gradient(135deg, #f0f9ff, #f8fafc);
+}
+
+/* Message Row */
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.message-row.own {
+  justify-content: flex-end;
+}
+
+.message-row.other {
+  justify-content: flex-start;
+}
+
+/* Avatar */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Message Bubble Base */
+.message-bubble {
+  max-width: 60%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+/* Own Message */
+/* Own Message */
+.message-row.own .message-bubble {
+  background: #e0f2fe; 
+  color: #0f172a;
+
+  border: 1px solid #bae6fd;
+  border-bottom-right-radius: 4px;
+
+  box-shadow: none; /* remove heavy glow */
+}
+
+/* Other Message */
+.message-row.other .message-bubble {
+  background: #ffffff;
+  color: #0f172a;
+
+  border: 1px solid #e2e8f0;
+  border-bottom-left-radius: 4px;
+}
+
+
+
+
+
+
+
+/* Other Message */
+.message-row.other .message-bubble {
+  background: #ffffff;
+  color: #0f172a;
+
+  border: 1px solid #e2e8f0;
+  border-bottom-left-radius: 4px;
+}
+
+/* Text */
+.message-text {
+  line-height: 1.4;
+}
+
+/* Image */
+.message-image {
+  max-width: 200px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
+/* Time */
+.message-time {
+  font-size: 11px;
+  color: #64748b;
+  align-self: flex-end;
+}
+
+/* Empty State */
+.no-chat-selected {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* Scrollbar */
+.chat-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00c6ff, #0072ff);
+  border-radius: 10px;
+}

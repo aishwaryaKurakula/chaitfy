@@ -1,0 +1,54 @@
+.nochat-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.nochat-icon-wrapper {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: rgba(14, 165, 233, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.nochat-icon {
+  font-size: 28px;
+  color: #0ea5e9;
+}
+
+.nochat-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 8px;
+}
+
+.nochat-text {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 20px;
+  max-width: 300px;
+}
+
+.nochat-button {
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: rgba(14, 165, 233, 0.1);
+  color: #0ea5e9;
+  transition: background-color 0.2s ease;
+}
+
+.nochat-button:hover {
+  background-color: rgba(14, 165, 233, 0.2);
+}

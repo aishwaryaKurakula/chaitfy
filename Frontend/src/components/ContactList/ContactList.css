@@ -1,0 +1,130 @@
+/* Container */
+.contact-list {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Row (same structure as chat-card) */
+.contact-card {
+  width: 100%;
+  height: 75px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 16px;
+
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.contact-card:first-child {
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Hover (same as your chat) */
+.contact-card:hover {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 114, 255, 0.08),
+    rgba(0, 198, 255, 0.04)
+  );
+}
+
+/* Click feel */
+.contact-card:active {
+  transform: scale(0.995);
+}
+
+/* Content */
+.contact-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Avatar */
+.avatar {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  background: #dbeafe; /* your blue tone */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 114, 255, 0.12);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Online / Offline dot */
+.avatar::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.avatar.online::after {
+  background: #22c55e;
+}
+
+.avatar.offline::after {
+  background: #cbd5e1;
+}
+
+/* Name */
+.contact-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: black;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+/* Active (selected user) */
+.contact-card.active {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 114, 255, 0.14),
+    rgba(0, 198, 255, 0.08)
+  );
+  border-left: 4px solid #0072ff;
+  padding-left: 12px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .contact-card {
+    height: 65px;
+    padding: 0 12px;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .contact-name {
+    font-size: 14px;
+  }
+}

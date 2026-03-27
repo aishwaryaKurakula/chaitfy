@@ -1,0 +1,110 @@
+.chat-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  background:transparent;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition:0.25s ease, transform 0.2s ease;
+  
+}
+
+.chat-card:first-child {
+  border-top: 1px solid #e2e8f0;
+}
+
+.chat-card:hover {
+  background: linear-gradient(90deg, rgba(0, 114, 255, 0.08), rgba(0, 198, 255, 0.04));
+}
+
+.chat-card:active {
+  transform: scale(0.995);
+}
+
+.chat-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+}
+
+.avatar {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 114, 255, 0.12);
+}
+
+.avatar-img-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* online dot instead of card/ring styling */
+.avatar::after {
+  content: "";
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.avatar.online::after {
+  background: #22c55e;
+}
+
+.avatar.offline::after {
+  background: #cbd5e1;
+}
+
+.chat-name {
+  font-size: 15px;
+  font-weight:500;
+  color:black;
+  margin: 0;
+  letter-spacing: 0.1px;
+  font-family: sans-serif;
+}
+
+/* optional selected state if you add it later */
+.chat-card.active {
+  background: linear-gradient(90deg, rgba(0, 114, 255, 0.14), rgba(0, 198, 255, 0.08));
+  border-left: 4px solid #0072ff;
+  padding-left: 14px;
+}
+
+@media (max-width: 768px) {
+  .chat-card {
+    padding: 12px 14px;
+  }
+
+  .avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .chat-name {
+    font-size: 15px;
+  }
+}

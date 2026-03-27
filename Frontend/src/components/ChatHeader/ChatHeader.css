@@ -1,0 +1,103 @@
+body{
+  font-family: ui-sans-serif, system-ui,"Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+
+/* Chat Header */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background:rgb(98, 213, 255);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* LEFT SECTION */
+.chat-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* AVATAR */
+.user-avatar {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ONLINE / OFFLINE DOT */
+.user-avatar::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+
+  border: 2px solid #ffffff;
+}
+
+/* Online */
+.user-avatar.online::after {
+  background: #22c55e; /* clean green */
+}
+
+/* Offline */
+.user-avatar.offline::after {
+  background: #94a3b8;
+}
+
+/* USER DETAILS */
+.user-details h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.status-text {
+  font-size: 13px;
+  color: white;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+
+  color: #ffffff;
+
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* HOVER */
+.close-btn:hover {
+  background: rgba(255,255,255,0.25);
+  transform: rotate(90deg);
+}
+
+/* CLICK */
+.close-btn:active {
+  transform: scale(0.9);
+}

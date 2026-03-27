@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+Frontend/node_modules/
+Backend/node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+Frontend/.env
+Frontend/.env.*
+!Frontend/.env.example
+Backend/.env
+Backend/.env.*
+!Backend/.env.example
+
+# Build output
+dist/
+build/
+coverage/
+Frontend/dist/
+Frontend/build/
+Backend/dist/
+Backend/build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime files
+pids/
+*.pid
+*.pid.lock
+*.seed
+
+# Cache / temp
+.tmp/
+.temp/
+.tmp
+.temp
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Vite
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local tool files
+*.local
+
+# Optional uploads / generated media
+Backend/uploads/
+Backend/tmp/
+
+
+# misc
+.vscode/

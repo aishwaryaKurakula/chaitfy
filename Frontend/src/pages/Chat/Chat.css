@@ -1,0 +1,69 @@
+*{
+  box-sizing: border-box;
+  /* outline: 1px solid red; */
+}
+ 
+
+.container {
+  display: flex;
+ 
+  
+}
+
+.left-side {
+  flex: 0 0 80px;
+}
+.middle {
+  flex: 0 0 400px;   
+  overflow-y: auto;
+background: #f1f7fb;
+}
+
+.right-side {
+  flex: 1;  
+  display: flex;
+  flex-direction: column;
+}
+
+
+.chat-search {
+  position: relative;
+  padding: 13px;
+  border-bottom: 1px solid #e2e8f0;
+  /* background: #9fc8d7; */
+}
+
+/* Icon */
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  color: #4f92ef;
+  font-size: 16px;
+}
+
+/* Input */
+.chat-search-input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  outline: none;
+  background-color: #f1f5f9;
+  color: #0f172a;
+  font-size: 15px;
+  transition: all 0.2s ease;
+}
+
+/* Placeholder */
+.chat-search-input::placeholder {
+  color: #94a3b8;
+}
+
+/* Focus effect (matches your cyan theme) */
+.chat-search-input:focus {
+  border-color: #00c6ff;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(0, 198, 255, 0.15);
+}
