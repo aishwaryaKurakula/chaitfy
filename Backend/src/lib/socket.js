@@ -4,35 +4,12 @@ const jwt = require("jsonwebtoken");
 const { Server } = require("socket.io");
 const User = require("../models/User.js");
 const ENV = require("./env.js");
+const { isAllowedOrigin } = require("./origins.js");
 
 const app = express();
 const server = http.createServer(app);
 
 const userSocketMap = new Map();
-
-function getAllowedOrigins() {
-  return [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    ENV.CLIENT_URL,
-    process.env.FRONTEND_URL,
-  ].filter(Boolean);
-}
-
-function normalizeOrigin(origin) {
-  return origin?.replace(/\/$/, "");
-}
-
-function isAllowedOrigin(origin) {
-  if (!origin) {
-    return true;
-  }
-
-  const normalizedOrigin = normalizeOrigin(origin);
-  return getAllowedOrigins().some(
-    (allowedOrigin) => normalizeOrigin(allowedOrigin) === normalizedOrigin,
-  );
-}
 
 function getOnlineUsers() {
   return Array.from(userSocketMap.entries())

@@ -51,6 +51,7 @@ function SignUpPage() {
                     <UserIcon className="input-icon" />
                     <input
                       type="text"
+                      required
                       value={signupData.username}
                       onChange={(e) =>
                         setSignupData({
@@ -70,6 +71,7 @@ function SignUpPage() {
                     <MailIcon className="input-icon" />
                     <input
                       type="email"
+                      required
                       value={signupData.email}
                       onChange={(e) =>
                         setSignupData({
@@ -90,6 +92,7 @@ function SignUpPage() {
 
                     <input
                       type={showPassword ? "text" : "password"}
+                      required
                       value={signupData.password}
                       onChange={(e) =>
                         setSignupData({
