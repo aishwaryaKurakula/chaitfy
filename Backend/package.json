@@ -25,6 +25,7 @@
     "nodemailer": "^8.0.1",
     "nodemon": "^3.1.11",
     "resend": "^6.9.2",
-    "socket.io": "^4.8.3"
+    "socket.io": "^4.8.3",
+    "zustand": "^5.0.12"
   }
 }

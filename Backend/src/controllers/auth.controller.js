@@ -115,10 +115,8 @@ const login = async (req, res) => {
 /* ========================= LOGOUT ========================= */
 const logout = async (_, res) => {
   res.cookie("jwt", "", {
+    ...generateToken.getCookieOptions(),
     maxAge: 0,
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false,
   });
 
   return res.status(200).json({ message: "Logged out successfully" });
