@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const BASE_URL =
-  import.meta.env.MODE === "development" ? "http://localhost:3000" : "/";
+  import.meta.env.MODE === "development" ? "https://chaitfy.onrender.com" : "/";
 
 const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -17,14 +17,13 @@ const useAuthStore = create((set, get) => ({
 
   /* ================= INIT ================= */
   init: () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      set({ authUser: { token } });
-      get().connectSocket();
-    } else {
-      set({ isCheckingAuth: false });
-    }
-  },
+  const token = localStorage.getItem("token");
+  if (token) {
+    get().checkAuth(); // ✅ better
+  } else {
+    set({ isCheckingAuth: false });
+  }
+},
 
   /* ================= CHECK AUTH ================= */
  checkAuth: async () => {
@@ -52,7 +51,6 @@ const useAuthStore = create((set, get) => ({
   }
 },
  
-  
 
   /* ================= SIGNUP ================= */
   signup: async (data) => {
@@ -201,32 +199,35 @@ updateProfile: async (data) => {
 
 
   /* ================= SOCKET ================= */
-  connectSocket: () => {
-    if (get().socket) return;
 
-    const token = get().authUser?.token || localStorage.getItem("token");
-    if (!token) return;
 
-    const socket = io(BASE_URL, {
-      withCredentials: true,
-      auth: { token },
-      transports: ["websocket", "polling"],
-    });
+ 
+ connectSocket: () => {
+  const existingSocket = get().socket;
+  if (existingSocket?.connected) return;
 
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
-    });
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.log("No token, socket not connecting");
+    return;
+  }
 
-    socket.on("connect_error", (err) => {
-      console.error("Socket error:", err.message);
-    });
+  const socket = io(BASE_URL, {
+    auth: { token },
+    transports: ["websocket"],
+  });
 
-    socket.on("onlineUsers", (users) => {
-      set({ onlineUsers: users || [] });
-    });
+  socket.on("connect", () => {
+    console.log("Socket connected:", socket.id);
+  });
 
-    set({ socket });
-  },
+  socket.on("connect_error", (err) => {
+    console.error("Socket error:", err.message);
+  });
+
+  set({ socket });
+},
+ 
 
   disconnectSocket: () => {
     const socket = get().socket;
