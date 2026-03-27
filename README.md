@@ -47,7 +47,6 @@ Chatify is a full-stack, real-time messaging application designed to connect peo
 | 🔍 **Search** | Find contacts or past messages in seconds |
 | ⚙️ **Settings Panel** | Change name and password |
 | 📱 **Responsive Design** | Fully optimized for desktop, tablet, and mobile |
-| 🔐 **Secure Authentication** | Safe login and signup with JWT / Firebase Auth |
 
 ---
 
