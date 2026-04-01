@@ -11,22 +11,34 @@ const { app, server } = require("./lib/socket.js");
 
 const allowedOrigins = getAllowedOrigins();
 const corsOptions = {
+  origin: [
+    "https://chaitfy.vercel.app",
+    "http://localhost:5173",
+    ...allowedOrigins.filter(
+      (origin) =>
+        origin !== "https://chaitfy.vercel.app" &&
+        origin !== "http://localhost:5173"
+    ),
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+const preflightCorsOptions = {
+  ...corsOptions,
   origin: (origin, callback) => {
-    if (isAllowedOrigin(origin)) {
+    if (!origin || isAllowedOrigin(origin) || corsOptions.origin.includes(origin)) {
       return callback(null, true);
     }
 
     console.error("Blocked CORS origin:", origin);
     return callback(new Error(`Origin ${origin} is not allowed by CORS`));
   },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 };
 
-app.use(
-  cors(corsOptions),
-);
-app.options(/.*/, cors(corsOptions));
+app.use(cors(corsOptions));
+app.options(/.*/, cors(preflightCorsOptions));
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -59,4 +71,14 @@ async function startServer() {
   });
 }
 
-startServer();
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  });
+}
+
+module.exports = {
+  app,
+  startServer,
+};
