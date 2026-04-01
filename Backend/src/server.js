@@ -12,10 +12,11 @@ const { app, server } = require("./lib/socket.js");
 const allowedOrigins = getAllowedOrigins();
 const corsOptions = {
   origin: [
+    "https://chatify.vercel.app",
     "http://localhost:5173",
     ...allowedOrigins.filter(
       (origin) =>
-        origin !== "https://chatifyhere.vercel.app" &&
+        origin !== "https://chatify.vercel.app" &&
         origin !== "http://localhost:5173"
     ),
   ],
