@@ -3,8 +3,9 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f8fafc; /* same as login */
+  background: #f8fafc;
   font-family: 'Poppins', sans-serif;
+  min-width: 0;
 }
 
 /* Chat Body */
@@ -44,7 +45,7 @@
 
 /* Message Bubble Base */
 .message-bubble {
-  max-width: 60%;
+  max-width: min(60%, 560px);
   padding: 10px 14px;
   border-radius: 16px;
   position: relative;
@@ -97,7 +98,7 @@
 
 /* Image */
 .message-image {
-  max-width: 200px;
+  max-width: min(200px, 100%);
   border-radius: 10px;
   margin-bottom: 4px;
 }
@@ -127,4 +128,27 @@
 .chat-body::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #00c6ff, #0072ff);
   border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .chat-wrapper,
+  .no-chat-selected {
+    height: 100dvh;
+  }
+
+  .chat-body {
+    padding: 14px 12px;
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  .message-bubble {
+    max-width: calc(100% - 44px);
+    padding: 10px 12px;
+    font-size: 13px;
+  }
 }

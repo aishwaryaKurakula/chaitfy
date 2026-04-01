@@ -36,6 +36,7 @@
   flex: 1;
   padding: 40px;
   background: #ffffff;
+  min-width: 0;
 }
 
 .form-box {
@@ -285,8 +286,20 @@
 
 /* MOBILE */
 @media (max-width: 480px) {
+  .signup-wrapper {
+    padding: 12px;
+  }
+
+  .signup-content {
+    border-radius: 14px;
+  }
+
   .signup-left {
     padding: 20px;
+  }
+
+  .form-box {
+    max-width: 100%;
   }
 
   .form-heading h2 {

@@ -13,7 +13,7 @@ function Chat() {
   const [search, setSearch] = useState("");
 
   return (
-    <div className="container">
+    <div className={`container ${selectedUser ? "chat-open" : ""}`}>
       
       {/* LEFT SIDE */}
       <div className="left-side">

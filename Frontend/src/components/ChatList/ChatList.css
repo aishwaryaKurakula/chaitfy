@@ -7,7 +7,7 @@
   border: none;
   border-bottom: 1px solid #e2e8f0;
   cursor: pointer;
-  transition:0.25s ease, transform 0.2s ease;
+  transition: 0.25s ease, transform 0.2s ease;
   
 }
 
@@ -28,6 +28,7 @@
   align-items: center;
   gap: 10px;
   min-height: 56px;
+  min-width: 0;
 }
 
 .avatar {
@@ -85,6 +86,9 @@
   margin: 0;
   letter-spacing: 0.1px;
   font-family: sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* optional selected state if you add it later */
@@ -100,11 +104,16 @@
   }
 
   .avatar {
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
   }
 
   .chat-name {
     font-size: 15px;
+  }
+
+  .avatar::after {
+    width: 14px;
+    height: 14px;
   }
 }

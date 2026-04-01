@@ -13,6 +13,7 @@
   align-items: center;
   min-height: 100vh;
   background: #f8fafc; /* soft white */
+  padding: 20px;
   /* optional cream: #fdf6f0 */
 }
 
@@ -272,6 +273,33 @@
 
   .login-left {
     border-radius: 20px;
+    padding: 32px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 12px;
+    align-items: stretch;
+  }
+
+  .login-container {
+    width: 100%;
+    border-radius: 16px;
+  }
+
+  .login-left {
+    min-width: 0;
+    padding: 28px 18px;
+  }
+
+  .form-heading h2 {
+    font-size: 24px;
+  }
+
+  .form-heading p,
+  .signup-link {
+    font-size: 14px;
   }
 }
 @media (max-width: 900px) {

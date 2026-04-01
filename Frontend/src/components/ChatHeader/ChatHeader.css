@@ -101,3 +101,21 @@ body{
 .close-btn:active {
   transform: scale(0.9);
 }
+
+@media (max-width: 768px) {
+  .chat-header {
+    padding: 12px 14px;
+  }
+
+  .chat-user-info {
+    min-width: 0;
+  }
+
+  .user-details h3 {
+    font-size: 15px;
+  }
+
+  .status-text {
+    font-size: 12px;
+  }
+}
