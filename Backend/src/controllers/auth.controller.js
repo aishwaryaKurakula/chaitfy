@@ -11,7 +11,9 @@ const cloudinary = require("cloudinary").v2;
 /* ========================= SIGNUP ========================= */
 const signup = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const username = req.body.username?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
 
     // validations
     if (!username || !email || !password) {
@@ -52,15 +54,11 @@ const signup = async (req, res) => {
     const token = generateToken(newUser._id, res);
 
     // send email (non-blocking)
-    try {
-      await sendWelcomeEmail(
-        newUser.email,
-        newUser.username,
-        ENV.CLIENT_URL
-      );
-    } catch (err) {
-      console.error("Email error:", err.message);
-    }
+    Promise.resolve()
+      .then(() => sendWelcomeEmail(newUser.email, newUser.username, ENV.CLIENT_URL))
+      .catch((err) => {
+        console.error("Email error:", err.message);
+      });
 
     return res.status(201).json({
       token,
@@ -80,7 +78,8 @@ const signup = async (req, res) => {
 /* ========================= LOGIN ========================= */
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
 
     if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -105,16 +104,13 @@ const login = async (req, res) => {
       timeZone: "Asia/Kolkata",
     });
 
-    try {
-      await sendLoginAlertEmail(
-        user.email,
-        user.username,
-        loginTime,
-        ENV.CLIENT_URL
-      );
-    } catch (err) {
-      console.error("Login email error:", err.message);
-    }
+    Promise.resolve()
+      .then(() =>
+        sendLoginAlertEmail(user.email, user.username, loginTime, ENV.CLIENT_URL)
+      )
+      .catch((err) => {
+        console.error("Login email error:", err.message);
+      });
 
     return res.status(200).json({
       token,
