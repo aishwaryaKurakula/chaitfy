@@ -11,10 +11,12 @@ function getAllowedOrigins() {
     "http://127.0.0.1:5173",
     "http://localhost:5174",
     "http://127.0.0.1:5174",
+    "https://chatifyhere.vercel.app",
     "https://chaitfy.netlify.app",
     "https://chatify.netlify.app",
     "https://chaitfy.onrender.com",
     "https://chatify.onrender.com",
+    "https://chatify-0cv3.onrender.com",
     process.env.FRONTEND_URL,
   ]
     .filter(Boolean)
