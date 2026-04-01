@@ -51,8 +51,12 @@
 }
 
 .mobile-chat-topbar,
-.mobile-tab-switch {
+.mobile-list-layout {
   display: none;
+}
+
+.desktop-list-layout {
+  display: block;
 }
 
 /* Icon */
@@ -212,32 +216,13 @@
     font-size: 18px;
   }
 
-  .mobile-tab-switch {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 12px 14px 0;
-    background: #ffffff;
+  .mobile-list-layout {
+    display: block;
+    padding-bottom: 18px;
   }
 
-  .mobile-tab-btn {
-    border: none;
-    border-radius: 16px;
-    background: #eff6ff;
-    color: #475569;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: 0.2s ease;
-  }
-
-  .mobile-tab-btn.active {
-    background: linear-gradient(135deg, #0f766e, #10b981);
-    color: #ffffff;
+  .desktop-list-layout {
+    display: none;
   }
 }
 
@@ -260,16 +245,6 @@
     width: 38px;
     height: 38px;
     border-radius: 12px;
-  }
-
-  .mobile-tab-switch {
-    padding: 10px 12px 0;
-    gap: 8px;
-  }
-
-  .mobile-tab-btn {
-    padding: 11px 10px;
-    font-size: 13px;
   }
 
   .chat-search {

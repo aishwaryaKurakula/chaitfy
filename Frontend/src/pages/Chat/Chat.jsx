@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Chat.css";
-import { FaComments, FaSearch, FaUsers } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { FiLogOut, FiSettings } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import useChatStore from "../../store/useChatStore";
@@ -12,7 +12,7 @@ import NoConversationPlaceholder from "../../components/NoCon/NoConversationPlac
 import useAuthStore from "../../store/useAuthStore";
 
 function Chat() {
-  const { activeTab, selectedUser, setActiveTab } = useChatStore();
+  const { activeTab, selectedUser } = useChatStore();
   const { authUser, logout } = useAuthStore();
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
@@ -39,9 +39,7 @@ function Chat() {
 
               <div className="mobile-chat-copy">
                 <span className="mobile-chat-title">Chatify</span>
-                <span className="mobile-chat-subtitle">
-                  {activeTab === "chats" ? "Your conversations" : "Find people to message"}
-                </span>
+                <span className="mobile-chat-subtitle">Your conversations and contacts</span>
               </div>
             </div>
 
@@ -65,40 +63,27 @@ function Chat() {
             </div>
           </div>
 
-          <div className="mobile-tab-switch">
-            <button
-              type="button"
-              className={`mobile-tab-btn ${activeTab === "chats" ? "active" : ""}`}
-              onClick={() => setActiveTab("chats")}
-            >
-              <FaComments />
-              <span>Chats</span>
-            </button>
-            <button
-              type="button"
-              className={`mobile-tab-btn ${activeTab === "contacts" ? "active" : ""}`}
-              onClick={() => setActiveTab("contacts")}
-            >
-              <FaUsers />
-              <span>Contacts</span>
-            </button>
-          </div>
-          
           {/* SEARCH */}
           <div className="chat-search">
             <FaSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search chats..."
+              placeholder="Search people..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="chat-search-input"
             />
           </div>
 
-          {/* CONDITIONAL LIST */}
-          {activeTab === "chats" && <ChatList search={search} />}
-          {activeTab === "contacts" && <ContactList search={search} />}
+          <div className="mobile-list-layout">
+            <ChatList search={search} hideEmptyState sectionTitle="Recent chats" />
+            <ContactList search={search} hideEmptyState sectionTitle="All contacts" />
+          </div>
+
+          <div className="desktop-list-layout">
+            {activeTab === "chats" && <ChatList search={search} />}
+            {activeTab === "contacts" && <ContactList search={search} />}
+          </div>
 
         </div>
       </div>

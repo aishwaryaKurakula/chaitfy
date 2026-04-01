@@ -1,3 +1,18 @@
+.chat-list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-list-heading {
+  margin: 0;
+  padding: 18px 18px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
 .chat-card {
   position: relative;
   display: block;
@@ -99,6 +114,10 @@
 }
 
 @media (max-width: 768px) {
+  .chat-list-heading {
+    padding: 16px 14px 8px;
+  }
+
   .chat-card {
     padding: 12px 14px;
   }

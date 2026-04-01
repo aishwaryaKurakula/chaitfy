@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import useChatStore from "../../store/useChatStore";
 import useAuthStore from "../../store/useAuthStore";
 
@@ -7,7 +7,7 @@ import NoChatsFound from "../../components/NoChatsFound/NoChatsFound";
 
 import "./ChatList.css";
 
-function ChatList() {
+function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
   const {
     getMyChatPartners,
     chats = [],
@@ -21,12 +21,28 @@ function ChatList() {
     getMyChatPartners();
   }, [getMyChatPartners]);
 
+  const filteredChats = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return chats;
+    }
+
+    return chats.filter((chat) =>
+      chat.username?.toLowerCase().includes(normalizedSearch)
+    );
+  }, [chats, search]);
+
   if (isUsersLoading) return <UsersLoadingSkeleton />;
-  if (!chats.length) return <NoChatsFound />;
+  if (!filteredChats.length) {
+    return hideEmptyState ? null : <NoChatsFound />;
+  }
 
   return (
-    <>
-      {chats.map((chat) => {
+    <div className="chat-list-section">
+      {sectionTitle ? <p className="chat-list-heading">{sectionTitle}</p> : null}
+
+      {filteredChats.map((chat) => {
         const isOnline = onlineUsers
           .map(String)
           .includes(String(chat._id));
@@ -53,7 +69,7 @@ function ChatList() {
           </div>
         );
       })}
-    </>
+    </div>
   );
 }
 

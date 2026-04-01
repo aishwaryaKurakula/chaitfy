@@ -1,3 +1,18 @@
+.contact-list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.contact-list-heading {
+  margin: 0;
+  padding: 18px 18px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
 /* Container */
 .contact-list {
   padding: 0;
@@ -118,6 +133,10 @@
 
 /* Mobile */
 @media (max-width: 768px) {
+  .contact-list-heading {
+    padding: 16px 14px 8px;
+  }
+
   .contact-card {
     height: 65px;
     padding: 0 12px;
