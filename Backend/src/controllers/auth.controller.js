@@ -1,7 +1,10 @@
 const bcrypt = require("bcryptjs");
 const generateToken = require("../lib/utils.js");
 const User = require("../models/User.js");
-const sendWelcomeEmail = require("../emails/emailHandlers.js");
+const {
+  sendWelcomeEmail,
+  sendLoginAlertEmail,
+} = require("../emails/emailHandlers.js");
 const ENV = require("../lib/env.js");
 const cloudinary = require("cloudinary").v2;
 
@@ -96,6 +99,22 @@ const login = async (req, res) => {
     }
 
     const token = generateToken(user._id, res);
+    const loginTime = new Date().toLocaleString("en-IN", {
+      dateStyle: "full",
+      timeStyle: "long",
+      timeZone: "Asia/Kolkata",
+    });
+
+    try {
+      await sendLoginAlertEmail(
+        user.email,
+        user.username,
+        loginTime,
+        ENV.CLIENT_URL
+      );
+    } catch (err) {
+      console.error("Login email error:", err.message);
+    }
 
     return res.status(200).json({
       token,

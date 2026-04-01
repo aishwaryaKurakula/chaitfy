@@ -35,6 +35,15 @@ function SignUpPage() {
           {/* LEFT SIDE */}
           <div className="signup-left">
             <div className="form-box">
+              <div className="mobile-brand">
+                <div className="mobile-brand-mark">
+                  <img src="/logo2.png" alt="Chatify" className="mobile-brand-logo" />
+                </div>
+                <div className="mobile-brand-copy">
+                  <span className="mobile-brand-title">Chatify</span>
+                  <span className="mobile-brand-text">Create your space and start chatting</span>
+                </div>
+              </div>
 
               <div className="form-heading">
                 <MessageCircleIcon className="heading-icon" />

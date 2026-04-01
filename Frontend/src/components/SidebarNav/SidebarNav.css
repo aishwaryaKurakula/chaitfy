@@ -2,6 +2,7 @@
 .sidebar-nav {
   width: 85px;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

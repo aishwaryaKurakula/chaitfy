@@ -1,17 +1,15 @@
-const transporter = require("./sender"); // Gmail transporter
-const createWelcomeEmailTemplate = require("./emailTemplates");
-const ENV = require("../lib/env.js");
+const { sendEmail } = require("./sender");
+const {
+  createWelcomeEmailTemplate,
+  createLoginAlertEmailTemplate,
+} = require("./emailTemplates");
 
 const sendWelcomeEmail = async (email, name, clientURL) => {
   try {
-    const html = createWelcomeEmailTemplate(name, clientURL);
-
-    await transporter.sendMail({
-      from: `"Chatify Team" <${ENV.EMAIL_USER}>`,
+    await sendEmail({
       to: email,
       subject: "Welcome to Chatify!",
-      // html: html,
-      html:createWelcomeEmailTemplate(name, clientURL),
+      html: createWelcomeEmailTemplate(name, clientURL),
     });
 
     console.log("Welcome email sent successfully");
@@ -20,23 +18,25 @@ const sendWelcomeEmail = async (email, name, clientURL) => {
     throw new Error("Failed to send welcome email");
   }
 };
-console.log(ENV.EMAIL_USER);
-console.log(ENV.EMAIL_PASS);
-module.exports = sendWelcomeEmail;
+const sendLoginAlertEmail = async (email, name, loginTime, clientURL) => {
+  try {
+    await sendEmail({
+      to: email,
+      subject: "New login to your Chatify account",
+      html: createLoginAlertEmailTemplate(name, loginTime, clientURL),
+    });
 
+    console.log("Login alert email sent successfully");
+  } catch (error) {
+    console.error("Error in sending login alert email:", error);
+    throw new Error("Failed to send login alert email");
+  }
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
+module.exports = {
+  sendWelcomeEmail,
+  sendLoginAlertEmail,
+};
 
 
 

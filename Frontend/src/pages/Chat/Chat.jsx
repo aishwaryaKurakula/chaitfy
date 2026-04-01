@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import "./Chat.css";
-import { FaSearch } from "react-icons/fa";
+import { FaComments, FaSearch, FaUsers } from "react-icons/fa";
+import { FiLogOut, FiSettings } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import useChatStore from "../../store/useChatStore";
 import SidebarNav from "../../components/SidebarNav/SidebarNav";
 import ChatList from "../../components/ChatList/ChatList";
 import ContactList from "../../components/ContactList/ContactList";
 import ChatContainer from "../../components/ChatContainer/ChatContainer";
 import NoConversationPlaceholder from "../../components/NoCon/NoConversationPlaceholder";
+import useAuthStore from "../../store/useAuthStore";
 
 function Chat() {
-  const { activeTab, selectedUser } = useChatStore();
+  const { activeTab, selectedUser, setActiveTab } = useChatStore();
+  const { authUser, logout } = useAuthStore();
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   return (
     <div className={`container ${selectedUser ? "chat-open" : ""}`}>
@@ -23,6 +28,61 @@ function Chat() {
       {/* MIDDLE SIDEBAR */}
       <div className="middle">
         <div className="sidebar">
+          <div className="mobile-chat-topbar">
+            <div className="mobile-chat-brand">
+              <div className="mobile-chat-avatar">
+                <img
+                  src={authUser?.profilePic || "/avatar.png"}
+                  alt={authUser?.username || "User"}
+                />
+              </div>
+
+              <div className="mobile-chat-copy">
+                <span className="mobile-chat-title">Chatify</span>
+                <span className="mobile-chat-subtitle">
+                  {activeTab === "chats" ? "Your conversations" : "Find people to message"}
+                </span>
+              </div>
+            </div>
+
+            <div className="mobile-chat-actions">
+              <button
+                type="button"
+                className="mobile-action-btn"
+                onClick={() => navigate("/settings")}
+                aria-label="Open settings"
+              >
+                <FiSettings />
+              </button>
+              <button
+                type="button"
+                className="mobile-action-btn"
+                onClick={logout}
+                aria-label="Log out"
+              >
+                <FiLogOut />
+              </button>
+            </div>
+          </div>
+
+          <div className="mobile-tab-switch">
+            <button
+              type="button"
+              className={`mobile-tab-btn ${activeTab === "chats" ? "active" : ""}`}
+              onClick={() => setActiveTab("chats")}
+            >
+              <FaComments />
+              <span>Chats</span>
+            </button>
+            <button
+              type="button"
+              className={`mobile-tab-btn ${activeTab === "contacts" ? "active" : ""}`}
+              onClick={() => setActiveTab("contacts")}
+            >
+              <FaUsers />
+              <span>Contacts</span>
+            </button>
+          </div>
           
           {/* SEARCH */}
           <div className="chat-search">

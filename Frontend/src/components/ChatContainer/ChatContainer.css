@@ -3,9 +3,11 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   background: #f8fafc;
   font-family: 'Poppins', sans-serif;
   min-width: 0;
+  overflow: hidden;
 }
 
 /* Chat Body */
@@ -113,6 +115,7 @@
 /* Empty State */
 .no-chat-selected {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -133,7 +136,7 @@
 @media (max-width: 768px) {
   .chat-wrapper,
   .no-chat-selected {
-    height: 100dvh;
+    height: calc(100dvh - 72px);
   }
 
   .chat-body {

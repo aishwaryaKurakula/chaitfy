@@ -9,45 +9,55 @@
 /* WRAPPER */
 .signup-wrapper {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f7f9fc;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 32%),
+    linear-gradient(180deg, #eaf6ff 0%, #f8fbff 48%, #f3f7fb 100%);
   padding: 20px;
+  overflow: hidden;
 }
 
 /* MAIN CONTAINER */
 .signup-container {
   width: 100%;
   max-width: 1000px;
+  max-height: calc(100dvh - 40px);
 }
 
 /* FLEX LAYOUT */
 .signup-content {
   display: flex;
-  border-radius: 16px;
+  border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
   background: white;
+  min-height: min(700px, calc(100dvh - 40px));
 }
 
 /* LEFT SIDE (FORM) */
 .signup-left {
   flex: 1;
-  padding: 40px;
+  padding: clamp(24px, 4vw, 40px);
   background: #ffffff;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .form-box {
-  max-width: 350px;
+  width: 100%;
+  max-width: 360px;
   margin: auto;
 }
 
 /* HEADING */
 .form-heading {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .heading-icon {
@@ -69,7 +79,7 @@
 .signup-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
 }
 
 .form-group label {
@@ -84,8 +94,8 @@
   display: flex;
   align-items: center;
   background: #f1f4f8;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 14px;
   transition: 0.3s;
   position: relative; /* IMPORTANT */
 }
@@ -142,10 +152,10 @@
 /* BUTTON */
 .submit-btn {
   margin-top: 10px;
-  padding: 12px;
+  padding: 14px;
   border: none;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #1e90ff, #00cfff);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #059669, #10b981);
   color: white;
   font-weight: 500;
   cursor: pointer;
@@ -176,19 +186,25 @@
 
 .login-link a {
   text-decoration: none;
-  color: #1e90ff;
+  color: #059669;
   font-weight: 500;
 }
 
 /* RIGHT SIDE */
 .signup-right {
   flex: 1;
-  background: linear-gradient(135deg, #1e90ff, #00cfff);
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 34%),
+    linear-gradient(160deg, #0f766e, #10b981 58%, #34d399 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   padding: 30px;
+}
+
+.mobile-brand {
+  display: none;
 }
 
 /* GLASS BOX EFFECT */
@@ -269,8 +285,21 @@
 
 /* TABLET */
 @media (max-width: 900px) {
+  .signup-wrapper {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .signup-container {
+    max-width: none;
+    max-height: none;
+  }
+
   .signup-content {
     flex-direction: column;
+    min-height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .signup-right {
@@ -278,7 +307,53 @@
   }
 
   .signup-left {
-    padding: 30px;
+    padding: 24px 20px;
+  }
+
+  .mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding: 14px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.16));
+  }
+
+  .mobile-brand-mark {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #059669, #10b981);
+    box-shadow: 0 10px 24px rgba(5, 150, 105, 0.22);
+    flex-shrink: 0;
+  }
+
+  .mobile-brand-logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+  }
+
+  .mobile-brand-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mobile-brand-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .mobile-brand-text {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.35;
   }
 }
 
@@ -286,20 +361,20 @@
 
 /* MOBILE */
 @media (max-width: 480px) {
-  .signup-wrapper {
-    padding: 12px;
-  }
-
   .signup-content {
-    border-radius: 14px;
+    border-radius: 0;
   }
 
   .signup-left {
-    padding: 20px;
+    padding: 18px 16px;
   }
 
   .form-box {
     max-width: 100%;
+  }
+
+  .input-wrapper input {
+    font-size: 16px;
   }
 
   .form-heading h2 {
@@ -307,7 +382,38 @@
   }
 
   .submit-btn {
-    padding: 10px;
+    padding: 13px;
+  }
+
+  .heading-icon {
+    width: 38px;
+    height: 38px;
+    margin-bottom: 8px;
+  }
+
+  .form-heading {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .mobile-brand {
+    margin-bottom: 18px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .mobile-brand-mark {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+  }
+
+  .mobile-brand-logo {
+    width: 30px;
+    height: 30px;
   }
 }
 

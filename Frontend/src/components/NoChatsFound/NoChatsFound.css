@@ -52,3 +52,28 @@
 .nochat-button:hover {
   background-color: rgba(14, 165, 233, 0.2);
 }
+
+@media (max-width: 480px) {
+  .nochat-container {
+    padding: 24px 18px;
+  }
+
+  .nochat-icon-wrapper {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 16px;
+  }
+
+  .nochat-title {
+    font-size: 18px;
+  }
+
+  .nochat-text {
+    font-size: 13px;
+  }
+
+  .nochat-button {
+    width: 100%;
+    max-width: 240px;
+  }
+}

@@ -1,4 +1,4 @@
- function createWelcomeEmailTemplate(name, clientURL) {
+function createWelcomeEmailTemplate(name, clientURL) {
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -80,4 +80,43 @@ margin: 0 10px;">Contact Us</a>
   `;
 }
 
-module.exports = createWelcomeEmailTemplate;
+function createLoginAlertEmailTemplate(name, loginTime, clientURL) {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Login to Chatify</title>
+  </head>
+  <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f7fb;">
+    <div style="background: linear-gradient(to right, #0ea5e9, #2563eb); padding: 28px; text-align: center; border-radius: 12px 12px 0 0;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Chatify Login Alert</h1>
+    </div>
+    <div style="background-color: #ffffff; padding: 32px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+      <p style="font-size: 18px; color: #1d4ed8;"><strong>Hello ${name},</strong></p>
+      <p>We noticed a new login to your Chatify account.</p>
+
+      <div style="background-color: #eff6ff; padding: 20px; border-radius: 10px; margin: 24px 0; border-left: 4px solid #0ea5e9;">
+        <p style="margin: 0 0 8px 0;"><strong>Login time:</strong></p>
+        <p style="margin: 0; color: #334155;">${loginTime}</p>
+      </div>
+
+      <p>If this was you, no action is needed.</p>
+      <p>If this wasn't you, please change your password right away.</p>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${clientURL}" style="background: linear-gradient(to right, #0ea5e9, #2563eb); color: white; text-decoration: none; padding: 12px 30px; border-radius: 50px; font-weight: 500; display: inline-block;">Open Chatify</a>
+      </div>
+
+      <p style="margin-top: 25px; margin-bottom: 0;">Best regards,<br>The Chatify Team</p>
+    </div>
+  </body>
+  </html>
+  `;
+}
+
+module.exports = {
+  createWelcomeEmailTemplate,
+  createLoginAlertEmailTemplate,
+};

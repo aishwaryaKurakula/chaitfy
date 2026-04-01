@@ -6,8 +6,10 @@
 
 .container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   background: #f8fafc;
+  overflow: hidden;
 }
 
 .left-side {
@@ -15,6 +17,8 @@
   position: sticky;
   top: 0;
   align-self: flex-start;
+  height: 100vh;
+  height: 100dvh;
 }
 
 .middle {
@@ -22,7 +26,8 @@
   overflow-y: auto;
   background: #f1f7fb;
   border-right: 1px solid #dbe7f3;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
 }
 
 .right-side {
@@ -30,7 +35,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
 }
 
 
@@ -42,6 +48,11 @@
   position: sticky;
   top: 0;
   z-index: 2;
+}
+
+.mobile-chat-topbar,
+.mobile-tab-switch {
+  display: none;
 }
 
 /* Icon */
@@ -87,37 +98,29 @@
 
 @media (max-width: 768px) {
   .container {
+    position: relative;
     flex-direction: column;
-    min-height: 100dvh;
+    height: 100dvh;
   }
 
   .left-side {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: auto;
-    z-index: 20;
-    flex: 0 0 auto;
-    align-self: stretch;
+    display: none;
   }
 
   .middle,
   .right-side {
     flex: 1 1 auto;
     width: 100%;
-    min-height: 100dvh;
+    height: calc(100dvh - 72px);
   }
 
   .middle {
     border-right: none;
-    min-height: 100dvh;
-    padding-bottom: 88px;
+    padding-bottom: 0;
   }
 
   .right-side {
-    min-height: 100dvh;
-    padding-bottom: 88px;
+    padding-bottom: 0;
   }
 
   .container.chat-open .middle {
@@ -135,5 +138,150 @@
   .chat-search {
     padding: 14px;
     top: 0;
+    background: #ffffff;
+  }
+
+  .mobile-chat-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 14px 10px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .mobile-chat-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .mobile-chat-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #0f766e, #10b981);
+    box-shadow: 0 10px 20px rgba(15, 118, 110, 0.16);
+  }
+
+  .mobile-chat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-chat-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .mobile-chat-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .mobile-chat-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobile-chat-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .mobile-action-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 14px;
+    background: #eef6fb;
+    color: #0f766e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .mobile-tab-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px 14px 0;
+    background: #ffffff;
+  }
+
+  .mobile-tab-btn {
+    border: none;
+    border-radius: 16px;
+    background: #eff6ff;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.2s ease;
+  }
+
+  .mobile-tab-btn.active {
+    background: linear-gradient(135deg, #0f766e, #10b981);
+    color: #ffffff;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-chat-topbar {
+    padding: 12px 12px 10px;
+  }
+
+  .mobile-chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+  }
+
+  .mobile-chat-title {
+    font-size: 17px;
+  }
+
+  .mobile-action-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+
+  .mobile-tab-switch {
+    padding: 10px 12px 0;
+    gap: 8px;
+  }
+
+  .mobile-tab-btn {
+    padding: 11px 10px;
+    font-size: 13px;
+  }
+
+  .chat-search {
+    padding: 12px;
+  }
+
+  .chat-search-input {
+    font-size: 16px;
+    padding: 11px 12px 11px 38px;
+  }
+
+  .search-icon {
+    left: 18px;
   }
 }
