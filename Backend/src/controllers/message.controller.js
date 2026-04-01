@@ -40,6 +40,9 @@ async function getUsersByPendingRequestReceiver(receiverId) {
         lastMessage: latestMessage.text || "",
         lastMessageHasImage: Boolean(latestMessage.image),
         lastMessageAt: latestMessage.createdAt,
+        unreadCount: pendingMessages.filter(
+          (message) => String(message.senderId) === senderId
+        ).length,
       };
     })
     .filter(Boolean);
@@ -303,6 +306,10 @@ const acceptMessageRequest = async (req, res) => {
         $addToSet: { acceptedContacts: currentUserId },
       }),
     ]);
+
+    emitToUser(senderId, "requestAccepted", {
+      userId: String(currentUserId),
+    });
 
     res.status(200).json({ message: "Message request accepted" });
   } catch (error) {

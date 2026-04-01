@@ -173,7 +173,7 @@ function Chat() {
                     <div className="request-card-content">
                       <div className="request-card-top">
                         <h4>{request.username}</h4>
-                        <span>Request</span>
+                        <span className="request-card-badge">{request.unreadCount || 1}</span>
                       </div>
                       <p>
                         {request.lastMessage
@@ -208,14 +208,18 @@ function Chat() {
                     <div className="group-card-content">
                       <div className="group-card-top">
                         <h4>{group.name}</h4>
-                        <span>
-                          {group.lastMessageAt
-                            ? new Date(group.lastMessageAt).toLocaleDateString([], {
-                                month: "short",
-                                day: "numeric",
-                              })
-                            : ""}
-                        </span>
+                        {group.unreadCount > 0 ? (
+                          <span className="group-unread-badge">{group.unreadCount}</span>
+                        ) : (
+                          <span>
+                            {group.lastMessageAt
+                              ? new Date(group.lastMessageAt).toLocaleDateString([], {
+                                  month: "short",
+                                  day: "numeric",
+                                })
+                              : ""}
+                          </span>
+                        )}
                       </div>
                       <p>
                         {group.lastMessage
@@ -255,7 +259,7 @@ function Chat() {
                         <div className="request-card-content">
                           <div className="request-card-top">
                             <h4>{request.username}</h4>
-                            <span>Request</span>
+                            <span className="request-card-badge">{request.unreadCount || 1}</span>
                           </div>
                           <p>
                             {request.lastMessage
@@ -290,14 +294,18 @@ function Chat() {
                         <div className="group-card-content">
                           <div className="group-card-top">
                             <h4>{group.name}</h4>
-                            <span>
-                              {group.lastMessageAt
-                                ? new Date(group.lastMessageAt).toLocaleDateString([], {
-                                    month: "short",
-                                    day: "numeric",
-                                  })
-                                : ""}
-                            </span>
+                            {group.unreadCount > 0 ? (
+                              <span className="group-unread-badge">{group.unreadCount}</span>
+                            ) : (
+                              <span>
+                                {group.lastMessageAt
+                                  ? new Date(group.lastMessageAt).toLocaleDateString([], {
+                                      month: "short",
+                                      day: "numeric",
+                                    })
+                                  : ""}
+                              </span>
+                            )}
                           </div>
                           <p>
                             {group.lastMessage

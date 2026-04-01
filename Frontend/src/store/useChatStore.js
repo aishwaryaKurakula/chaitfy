@@ -458,7 +458,12 @@ export const useChatStore = create((set, get) => ({
         const existingChat = state.chats.find((chat) => String(chat._id) === partnerId);
         const isOpenConversation = selectedUserId && String(selectedUserId) === partnerId;
 
-        if (!existingChat || newMessage.requestStatus !== "accepted") {
+        if (newMessage.requestStatus !== "accepted") {
+          return state;
+        }
+
+        if (!existingChat) {
+          get().getMyChatPartners();
           return state;
         }
 
@@ -510,6 +515,7 @@ export const useChatStore = create((set, get) => ({
       set((state) => {
         const existingGroup = state.groups.find((group) => String(group._id) === groupId);
         if (!existingGroup) {
+          get().getGroups();
           return state;
         }
 
@@ -518,6 +524,11 @@ export const useChatStore = create((set, get) => ({
           lastMessage: newMessage.text || "",
           lastMessageHasImage: Boolean(newMessage.image),
           lastMessageAt: newMessage.createdAt,
+          unreadCount: isOpenGroup
+            ? 0
+            : String(newMessage.senderId?._id || newMessage.senderId) === String(authUserId)
+              ? 0
+              : (existingGroup.unreadCount || 0) + 1,
         };
 
         return {
@@ -550,10 +561,24 @@ export const useChatStore = create((set, get) => ({
       });
     };
 
+    const handleRequestAccepted = ({ userId }) => {
+      const { selectedUser } = get();
+
+      get().getMyChatPartners();
+      get().getRequests();
+      get().getAllContacts();
+
+      if (selectedUser?._id && String(selectedUser._id) === String(userId)) {
+        get().getMessagesByUserId(userId);
+      }
+    };
+
     socket.off("newMessage");
     socket.on("newMessage", handleNewMessage);
     socket.off("newGroupMessage");
     socket.on("newGroupMessage", handleNewGroupMessage);
+    socket.off("requestAccepted");
+    socket.on("requestAccepted", handleRequestAccepted);
     set({ messageListenerAttachedTo: socket.id });
   },
 
@@ -567,6 +592,7 @@ export const useChatStore = create((set, get) => ({
 
     socket.off("newMessage");
     socket.off("newGroupMessage");
+    socket.off("requestAccepted");
     set({ messageListenerAttachedTo: null });
   },
 }));

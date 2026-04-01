@@ -34,6 +34,26 @@ async function getNormalizedGroupsForUser(userId) {
     latestMessages.map((item) => [item._id.toString(), item])
   );
 
+  const unreadCounts = await Message.aggregate([
+    {
+      $match: {
+        groupId: { $in: groupIds },
+        senderId: { $ne: new mongoose.Types.ObjectId(userId) },
+        readBy: { $ne: new mongoose.Types.ObjectId(userId) },
+      },
+    },
+    {
+      $group: {
+        _id: "$groupId",
+        unreadCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const unreadByGroupId = new Map(
+    unreadCounts.map((item) => [item._id.toString(), item.unreadCount])
+  );
+
   return groups.map((group) => {
     const latest = latestByGroupId.get(group._id.toString());
 
@@ -43,7 +63,7 @@ async function getNormalizedGroupsForUser(userId) {
       lastMessage: latest?.lastMessage || "",
       lastMessageHasImage: latest?.lastMessageHasImage || false,
       lastMessageAt: latest?.lastMessageAt || group.updatedAt,
-      unreadCount: 0,
+      unreadCount: unreadByGroupId.get(group._id.toString()) || 0,
     };
   });
 }

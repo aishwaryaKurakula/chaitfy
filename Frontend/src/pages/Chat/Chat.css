@@ -140,6 +140,21 @@
   color: #b45309;
 }
 
+.request-card-badge,
+.group-unread-badge {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #0072ff;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
 .request-card-content p {
   margin-top: 4px;
   font-size: 13px;
