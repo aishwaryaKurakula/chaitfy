@@ -9,7 +9,16 @@ function MessageInput() {
   const [imagePreview, setImagePreview] = useState(null);
 
   const fileInputRef = useRef(null);
-  const { sendMessage } = useChatStore();
+  const { sendMessage, relationshipStatus, selectedUser } = useChatStore();
+  const isGroup = Boolean(selectedUser?.isGroup || selectedUser?.groupId);
+  const canSend = isGroup || relationshipStatus === "accepted" || relationshipStatus === "pending_outgoing" || relationshipStatus === "none";
+  const placeholder = !isGroup && relationshipStatus === "blocked"
+    ? "You blocked this user"
+    : !isGroup && relationshipStatus === "pending_incoming"
+      ? "Accept the request to reply"
+      : !isGroup && relationshipStatus === "pending_outgoing"
+        ? "Send another request message..."
+        : "Type your message...";
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -65,7 +74,8 @@ function MessageInput() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="message-input"
-          placeholder="Type your message..."
+          placeholder={placeholder}
+          disabled={!canSend || (!isGroup && relationshipStatus === "pending_incoming")}
         />
 
         <input
@@ -80,13 +90,14 @@ function MessageInput() {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           className={`image-btn ${imagePreview ? "active" : ""}`}
+          disabled={!canSend || (!isGroup && relationshipStatus === "pending_incoming")}
         >
           <ImageIcon size={20} />
         </button>
 
         <button
           type="submit"
-          disabled={!text.trim() && !imagePreview}
+          disabled={!canSend || (!isGroup && relationshipStatus === "pending_incoming") || (!text.trim() && !imagePreview)}
           className="send-btn"
         >
           <SendIcon size={20} />

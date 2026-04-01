@@ -98,6 +98,12 @@
   cursor: not-allowed;
 }
 
+.image-btn:disabled,
+.message-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 480px) {
   .message-form {
     gap: 8px;

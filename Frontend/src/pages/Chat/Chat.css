@@ -41,13 +41,23 @@
 
 
 .chat-search {
-  position: relative;
   padding: 16px;
   border-bottom: 1px solid #e2e8f0;
   background: #f8fbff;
   position: sticky;
   top: 0;
   z-index: 2;
+}
+
+.chat-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-search-field {
+  position: relative;
+  flex: 1;
 }
 
 .mobile-chat-topbar,
@@ -57,6 +67,268 @@
 
 .desktop-list-layout {
   display: block;
+}
+
+.group-list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.request-list-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.request-list-heading {
+  margin: 0;
+  padding: 18px 18px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b45309;
+}
+
+.request-card {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.06), rgba(255,255,255,0.4));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  text-align: left;
+}
+
+.request-card-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.request-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.request-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.request-card-top h4,
+.request-card-content p {
+  margin: 0;
+}
+
+.request-card-top h4,
+.request-card-content p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.request-card-top span {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.request-card-content p {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.desktop-group-list {
+  border-bottom: 1px solid #dbe7f3;
+}
+
+.group-list-heading {
+  margin: 0;
+  padding: 18px 18px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.group-card {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  text-align: left;
+}
+
+.group-card-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.group-card-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.group-card-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.group-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.group-card-top h4,
+.group-card-content p {
+  margin: 0;
+}
+
+.group-card-top h4,
+.group-card-content p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group-card-top span {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.group-card-content p {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.group-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 40;
+}
+
+.group-modal {
+  width: min(100%, 460px);
+  max-height: min(80vh, 700px);
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.group-modal-header h3,
+.group-modal-header p {
+  margin: 0;
+}
+
+.group-modal-header p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.group-modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #0f172a;
+}
+
+.group-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.group-name-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+.group-member-list {
+  min-height: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.group-member-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.group-member-option:last-child {
+  border-bottom: none;
+}
+
+.group-member-option img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.create-group-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 13px;
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #ffffff;
+  font-weight: 700;
 }
 
 /* Icon */
@@ -80,6 +352,20 @@
   color: #0f172a;
   font-size: 15px;
   transition: all 0.2s ease;
+}
+
+.create-group-icon-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
 }
 
 /* Placeholder */
@@ -168,8 +454,8 @@
     border-radius: 16px;
     overflow: hidden;
     flex-shrink: 0;
-    background: linear-gradient(135deg, #0f766e, #10b981);
-    box-shadow: 0 10px 20px rgba(15, 118, 110, 0.16);
+    background: linear-gradient(135deg, #0072ff, #00c6ff);
+    box-shadow: 0 10px 20px rgba(0, 114, 255, 0.16);
   }
 
   .mobile-chat-avatar img {
@@ -209,7 +495,7 @@
     border: none;
     border-radius: 14px;
     background: #eef6fb;
-    color: #0f766e;
+    color: #0072ff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -223,6 +509,22 @@
 
   .desktop-list-layout {
     display: none;
+  }
+
+  .group-list-heading {
+    padding: 16px 14px 8px;
+  }
+
+  .request-list-heading {
+    padding: 16px 14px 8px;
+  }
+
+  .group-card {
+    padding: 12px 14px;
+  }
+
+  .request-card {
+    padding: 12px 14px;
   }
 }
 
@@ -256,7 +558,30 @@
     padding: 11px 12px 11px 38px;
   }
 
+  .create-group-icon-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
   .search-icon {
     left: 18px;
+  }
+
+  .group-card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+  }
+
+  .group-modal-backdrop {
+    padding: 12px;
+  }
+
+  .group-modal {
+    width: 100%;
+    max-height: 86vh;
+    border-radius: 20px;
+    padding: 16px;
   }
 }

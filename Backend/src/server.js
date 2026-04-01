@@ -6,6 +6,7 @@ const ENV = require("./lib/env.js");
 const { getAllowedOrigins, isAllowedOrigin } = require("./lib/origins.js");
 const authRoutes = require("./routes/auth.route.js");
 const messageRoutes = require("./routes/message.route.js");
+const groupRoutes = require("./routes/group.route.js");
 const { app, server } = require("./lib/socket.js");
 
 const allowedOrigins = getAllowedOrigins();
@@ -41,6 +42,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/groups", groupRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error("Unhandled server error:", err.message);

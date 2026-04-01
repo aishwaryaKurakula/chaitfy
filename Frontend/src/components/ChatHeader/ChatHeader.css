@@ -58,6 +58,10 @@ body{
   background: #94a3b8;
 }
 
+.user-avatar.group::after {
+  background: #0072ff;
+}
+
 /* USER DETAILS */
 .user-details h3 {
   margin: 0;
@@ -69,6 +73,24 @@ body{
 .status-text {
   font-size: 13px;
   color: white;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.manage-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #ffffff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* CLOSE BUTTON */
@@ -100,6 +122,159 @@ body{
 /* CLICK */
 .close-btn:active {
   transform: scale(0.9);
+}
+
+.group-manage-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.group-manage-modal {
+  width: min(100%, 440px);
+  max-height: 80vh;
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 18px;
+  color: #0f172a;
+}
+
+.group-manage-header,
+.group-manage-footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.group-manage-header h3,
+.group-manage-header p {
+  margin: 0;
+}
+
+.group-manage-header p {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.group-manage-close {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+.group-manage-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.group-manage-input {
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.group-member-chip-list,
+.group-add-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group-member-chip,
+.group-add-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.group-member-chip button {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.group-add-members p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.group-save-btn,
+.group-leave-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-weight: 700;
+}
+
+.group-save-btn {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  color: #ffffff;
+}
+
+.group-leave-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.request-action-bar {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+  flex-wrap: wrap;
+}
+
+.request-accept-btn,
+.request-reject-btn,
+.request-block-btn,
+.request-info-pill {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.request-accept-btn {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.request-reject-btn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.request-block-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.request-info-pill {
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 @media (max-width: 768px) {

@@ -98,6 +98,12 @@
   line-height: 1.4;
 }
 
+.message-sender-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0072ff;
+}
+
 /* Image */
 .message-image {
   max-width: min(200px, 100%);
@@ -131,6 +137,45 @@
 .chat-body::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #00c6ff, #0072ff);
   border-radius: 10px;
+}
+
+.message-action-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.28);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  z-index: 60;
+}
+
+.message-action-sheet {
+  width: min(100%, 420px);
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message-delete-btn,
+.message-cancel-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-weight: 700;
+}
+
+.message-delete-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.message-cancel-btn {
+  background: #eff6ff;
+  color: #0f172a;
 }
 
 @media (max-width: 768px) {

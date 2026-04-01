@@ -120,6 +120,40 @@
   white-space: nowrap;
 }
 
+.contact-status-tag {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.contact-status-tag.accepted {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+.contact-status-tag.pending_incoming {
+  background: rgba(245, 158, 11, 0.14);
+  color: #b45309;
+}
+
+.contact-status-tag.pending_outgoing {
+  background: rgba(59, 130, 246, 0.14);
+  color: #1d4ed8;
+}
+
+.contact-status-tag.blocked {
+  background: rgba(239, 68, 68, 0.14);
+  color: #b91c1c;
+}
+
+.contact-status-tag.none {
+  background: rgba(148, 163, 184, 0.16);
+  color: #475569;
+}
+
 /* Active (selected user) */
 .contact-card.active {
   background: linear-gradient(

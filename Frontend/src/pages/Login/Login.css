@@ -126,7 +126,7 @@
 .submit-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #059669, #10b981);
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
   color: #ffffff;
   font-weight: 600;
   border: none;
@@ -176,7 +176,7 @@
 }
 
 .register-link {
-  color: #059669;
+  color: #0072ff;
   text-decoration: none;
   font-weight: 600;
 }
@@ -191,7 +191,7 @@
   min-width: 0;
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 34%),
-    linear-gradient(160deg, #0f766e, #10b981 58%, #34d399 100%);
+    linear-gradient(135deg, #00c6ff, #0072ff);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -305,7 +305,7 @@
     margin-bottom: 22px;
     padding: 14px;
     border-radius: 18px;
-    background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.16));
+    background: linear-gradient(135deg, rgba(0, 114, 255, 0.08), rgba(0, 198, 255, 0.14));
   }
 
   .mobile-brand-mark {
@@ -315,8 +315,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #059669, #10b981);
-    box-shadow: 0 10px 24px rgba(5, 150, 105, 0.22);
+    background: linear-gradient(135deg, #0072ff, #00c6ff);
+    box-shadow: 0 10px 24px rgba(0, 114, 255, 0.22);
     flex-shrink: 0;
   }
 

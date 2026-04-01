@@ -155,7 +155,7 @@
   padding: 14px;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(135deg, #059669, #10b981);
+  background: linear-gradient(135deg, #1e90ff, #00cfff);
   color: white;
   font-weight: 500;
   cursor: pointer;
@@ -186,7 +186,7 @@
 
 .login-link a {
   text-decoration: none;
-  color: #059669;
+  color: #1e90ff;
   font-weight: 500;
 }
 
@@ -195,7 +195,7 @@
   flex: 1;
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.12), transparent 34%),
-    linear-gradient(160deg, #0f766e, #10b981 58%, #34d399 100%);
+    linear-gradient(135deg, #1e90ff, #00cfff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -317,7 +317,7 @@
     margin-bottom: 20px;
     padding: 14px;
     border-radius: 18px;
-    background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(16, 185, 129, 0.16));
+    background: linear-gradient(135deg, rgba(30, 144, 255, 0.08), rgba(0, 207, 255, 0.14));
   }
 
   .mobile-brand-mark {
@@ -327,8 +327,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #059669, #10b981);
-    box-shadow: 0 10px 24px rgba(5, 150, 105, 0.22);
+    background: linear-gradient(135deg, #1e90ff, #00cfff);
+    box-shadow: 0 10px 24px rgba(30, 144, 255, 0.22);
     flex-shrink: 0;
   }
 

@@ -2,8 +2,15 @@ const express = require("express");
 
 const {
   getAllContacts,
+  getIncomingRequests,
+  getBlockedUsers,
   getMessagesByUserId,
   sendMessage,
+  acceptMessageRequest,
+  rejectMessageRequest,
+  blockUser,
+  unblockUser,
+  deleteMessage,
   getChatPartners,
 } = require("../controllers/message.controller.js");
 
@@ -17,6 +24,13 @@ router.use(protectRoute);
 // Routes
 router.get("/contacts", getAllContacts);
 router.get("/chats", getChatPartners);
+router.get("/requests", getIncomingRequests);
+router.get("/blocked", getBlockedUsers);
+router.post("/requests/:id/accept", acceptMessageRequest);
+router.post("/requests/:id/reject", rejectMessageRequest);
+router.post("/block/:id", blockUser);
+router.post("/unblock/:id", unblockUser);
+router.delete("/:id", deleteMessage);
 router.get("/:id", getMessagesByUserId);
 router.post("/send/:id", sendMessage);
 

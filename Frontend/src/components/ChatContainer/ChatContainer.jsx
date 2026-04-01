@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useAuthStore from "../../store/useAuthStore";
 import useChatStore from "../../store/useChatStore";
 import ChatHeader from "../../components/ChatHeader/ChatHeader";
@@ -14,20 +14,28 @@ function ChatContainer() {
     messages = [],
     isMessagesLoading,
     getMessagesByUserId,
+    getGroupMessages,
     subscribeToMessages,
     unsubscribeFromMessages,
+    deleteMessage,
   } = useChatStore();
 
   const { authUser } = useAuthStore();
 
   const messageEndRef = useRef(null);
+  const pressTimerRef = useRef(null);
+  const [messageActionTarget, setMessageActionTarget] = useState(null);
 
   /* Fetch messages when user changes */
   useEffect(() => {
     if (selectedUser?._id) {
-      getMessagesByUserId(selectedUser._id);
+      if (selectedUser.isGroup || selectedUser.groupId) {
+        getGroupMessages(selectedUser._id);
+      } else {
+        getMessagesByUserId(selectedUser._id);
+      }
     }
-  }, [selectedUser, getMessagesByUserId]);
+  }, [selectedUser, getGroupMessages, getMessagesByUserId]);
 
   useEffect(() => {
     if (!selectedUser?._id) {
@@ -69,24 +77,43 @@ function ChatContainer() {
           <NoConversationPlaceholder name={selectedUser.username} />
         ) : (
           messages.map((msg) => {
-
-            const isOwnMessage = String(msg.senderId) === String(authUser?._id);
+            const senderId = msg.senderId?._id || msg.senderId;
+            const senderName = msg.senderId?.username || selectedUser.username;
+            const senderAvatar =
+              msg.senderId?.profilePic ||
+              selectedUser.profilePic ||
+              "/avatar.png";
+            const isOwnMessage = String(senderId) === String(authUser?._id);
 
             return (
               <div
                 key={msg._id}
                 className={`message-row ${isOwnMessage ? "own" : "other"}`}
+                onMouseDown={() => {
+                  if (!isOwnMessage || msg.isOptimistic) return;
+                  pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
+                }}
+                onMouseUp={() => clearTimeout(pressTimerRef.current)}
+                onMouseLeave={() => clearTimeout(pressTimerRef.current)}
+                onTouchStart={() => {
+                  if (!isOwnMessage || msg.isOptimistic) return;
+                  pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
+                }}
+                onTouchEnd={() => clearTimeout(pressTimerRef.current)}
               >
 
                 {!isOwnMessage && (
                   <img
-                    src={selectedUser.profilePic || "/avatar.png"}
+                    src={senderAvatar}
                     alt="profile"
                     className="avatar"
                   />
                 )}
 
                 <div className="message-bubble">
+                  {selectedUser.isGroup && !isOwnMessage ? (
+                    <div className="message-sender-name">{senderName}</div>
+                  ) : null}
 
                   {msg.image && (
                     <img
@@ -129,6 +156,28 @@ function ChatContainer() {
       </div>
 
       <MessageInput />
+
+      {messageActionTarget ? (
+        <div className="message-action-backdrop" onClick={() => setMessageActionTarget(null)}>
+          <div className="message-action-sheet" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="message-delete-btn"
+              onClick={async () => {
+                await deleteMessage(messageActionTarget._id);
+                setMessageActionTarget(null);
+              }}
+            >
+              Delete message
+            </button>
+            <button
+              className="message-cancel-btn"
+              onClick={() => setMessageActionTarget(null)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : null}
 
     </div>
   );

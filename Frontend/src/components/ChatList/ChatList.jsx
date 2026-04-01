@@ -102,7 +102,11 @@ function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
                         ? "Photo"
                         : "Start a conversation"}
                   </p>
-                  {isOnline ? <span className="chat-status-pill">Active</span> : null}
+                  {chat.unreadCount > 0 ? (
+                    <span className="chat-unread-badge">{chat.unreadCount}</span>
+                  ) : isOnline ? (
+                    <span className="chat-status-pill">Active</span>
+                  ) : null}
                 </div>
               </div>
             </div>

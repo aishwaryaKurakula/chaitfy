@@ -62,6 +62,17 @@ function ContactList({ search = "", hideEmptyState = false, sectionTitle = "" })
             </div>
 
             <h4 className="contact-name">{contact.username}</h4>
+            <span className={`contact-status-tag ${contact.relationshipStatus || "none"}`}>
+              {contact.relationshipStatus === "accepted"
+                ? "Connected"
+                : contact.relationshipStatus === "pending_incoming"
+                  ? "Request"
+                  : contact.relationshipStatus === "pending_outgoing"
+                    ? "Sent"
+                    : contact.relationshipStatus === "blocked"
+                      ? "Blocked"
+                      : "New"}
+            </span>
           </div>
         </div>
       ))}

@@ -19,6 +19,14 @@ required:true,
         type:String,
         default:""
     },
+    acceptedContacts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    }],
+    blockedUsers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    }],
 },{timestamps:true}) //createdAt and UpdatedAt 
 //last login
 
