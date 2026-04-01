@@ -29,6 +29,10 @@ function ChatContainer() {
   /* Fetch messages when user changes */
   useEffect(() => {
     if (selectedUser?._id) {
+      if (selectedUser.isGroupRequest) {
+        return;
+      }
+
       if (selectedUser.isGroup || selectedUser.groupId) {
         getGroupMessages(selectedUser._id);
       } else {
@@ -73,6 +77,8 @@ function ChatContainer() {
 
         {isMessagesLoading ? (
           <MessagesLoadingSkeleton />
+        ) : selectedUser.isGroupRequest ? (
+          <NoConversationPlaceholder name={selectedUser.name || selectedUser.username} />
         ) : messages.length === 0 ? (
           <NoConversationPlaceholder name={selectedUser.username} />
         ) : (

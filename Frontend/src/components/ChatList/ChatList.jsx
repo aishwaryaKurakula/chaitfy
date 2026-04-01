@@ -11,6 +11,9 @@ function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
   const {
     getMyChatPartners,
     chats = [],
+    groups = [],
+    requests = [],
+    groupRequests = [],
     isUsersLoading,
     setSelectedUser,
   } = useChatStore();
@@ -33,8 +36,14 @@ function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
     );
   }, [chats, search]);
 
+  const hasOtherConversationSections =
+    requests.length > 0 || groupRequests.length > 0 || groups.length > 0;
+
   if (isUsersLoading) return <UsersLoadingSkeleton />;
   if (!filteredChats.length) {
+    if (hasOtherConversationSections) {
+      return null;
+    }
     return hideEmptyState ? null : <NoChatsFound />;
   }
 

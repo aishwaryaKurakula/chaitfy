@@ -17,16 +17,21 @@ function Chat() {
     selectedUser,
     allContacts,
     groups,
+    groupRequests,
     requests,
     getAllContacts,
     getGroups,
     getRequests,
+    getGroupInvites,
     getBlockedUsers,
     createGroup,
     setSelectedUser,
   } = useChatStore();
   const { authUser, logout } = useAuthStore();
   const [search, setSearch] = useState("");
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+  const [mobileTab, setMobileTab] = useState("chats");
+  const [viewMode, setViewMode] = useState("list");
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [selectedMembers, setSelectedMembers] = useState([]);
@@ -36,8 +41,31 @@ function Chat() {
     getGroups();
     getAllContacts();
     getRequests();
+    getGroupInvites();
     getBlockedUsers();
-  }, [getAllContacts, getBlockedUsers, getGroups, getRequests]);
+  }, [getAllContacts, getBlockedUsers, getGroupInvites, getGroups, getRequests]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+
+      if (!mobile) {
+        setViewMode("list");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) {
+      return;
+    }
+
+    setViewMode(selectedUser ? "chat" : "list");
+  }, [isMobile, selectedUser]);
 
   const filteredGroups = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -75,262 +103,274 @@ function Chat() {
     }
   };
 
+  const handleSelectConversation = (entry) => {
+    setSelectedUser(entry);
+    if (isMobile) {
+      setViewMode("chat");
+    }
+  };
+
+  const renderGroupList = () => {
+    if (!filteredGroups.length) return null;
+
+    return (
+      <div className="group-list-section">
+        <p className="group-list-heading">Groups</p>
+        {filteredGroups.map((group) => (
+          <button
+            type="button"
+            key={group._id}
+            className="group-card"
+            onClick={() => handleSelectConversation({ ...group, isGroup: true })}
+          >
+            <div className="group-card-avatar">
+              {group.image ? (
+                <img src={group.image} alt={group.name} />
+              ) : (
+                <FaUsers />
+              )}
+            </div>
+            <div className="group-card-content">
+              <div className="group-card-top">
+                <h4>{group.name}</h4>
+                {group.unreadCount > 0 ? (
+                  <span className="group-unread-badge">{group.unreadCount}</span>
+                ) : (
+                  <span>
+                    {group.lastMessageAt
+                      ? new Date(group.lastMessageAt).toLocaleDateString([], {
+                          month: "short",
+                          day: "numeric",
+                        })
+                      : ""}
+                  </span>
+                )}
+              </div>
+              <p>
+                {group.lastMessage
+                  ? group.lastMessage
+                  : group.lastMessageHasImage
+                    ? "Photo"
+                    : `${group.members?.length || 0} members`}
+              </p>
+            </div>
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const renderRequests = () => {
+    if (!requests.length) return null;
+
+    return (
+      <div className="request-list-section">
+        <p className="request-list-heading">Message requests</p>
+        {requests.map((request) => (
+          <button
+            type="button"
+            key={request._id}
+            className="request-card"
+            onClick={() => handleSelectConversation(request)}
+          >
+            <img
+              src={request.profilePic || "/avatar.png"}
+              alt={request.username}
+              className="request-card-avatar"
+            />
+            <div className="request-card-content">
+              <div className="request-card-top">
+                <h4>{request.username}</h4>
+                <span className="request-card-badge">{request.unreadCount || 1}</span>
+              </div>
+              <p>
+                {request.lastMessage
+                  ? request.lastMessage
+                  : request.lastMessageHasImage
+                    ? "Photo"
+                    : "Sent you a message request"}
+              </p>
+            </div>
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const renderGroupRequests = () => {
+    if (!groupRequests.length) return null;
+
+    return (
+      <div className="request-list-section">
+        <p className="request-list-heading">Group invites</p>
+        {groupRequests.map((group) => (
+          <button
+            type="button"
+            key={group._id}
+            className="request-card"
+            onClick={() =>
+              handleSelectConversation({ ...group, isGroup: true, isGroupRequest: true })
+            }
+          >
+            <div className="group-card-avatar request-group-avatar">
+              {group.image ? <img src={group.image} alt={group.name} /> : <FaUsers />}
+            </div>
+            <div className="request-card-content">
+              <div className="request-card-top">
+                <h4>{group.name}</h4>
+                <span className="request-card-badge">New</span>
+              </div>
+              <p>{group.creatorId?.username || "Group admin"} invited you to join</p>
+            </div>
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className={`container ${selectedUser ? "chat-open" : ""}`}>
-      
-      {/* LEFT SIDE */}
       <div className="left-side">
         <SidebarNav />
       </div>
 
-      {/* MIDDLE SIDEBAR */}
       <div className="middle">
         <div className="sidebar">
-          <div className="mobile-chat-topbar">
-            <div className="mobile-chat-brand">
-              <div className="mobile-chat-avatar">
-                <img
-                  src={authUser?.profilePic || "/avatar.png"}
-                  alt={authUser?.username || "User"}
-                />
-              </div>
-
-              <div className="mobile-chat-copy">
-                <span className="mobile-chat-title">Chatify</span>
-                <span className="mobile-chat-subtitle">Your conversations and contacts</span>
-              </div>
-            </div>
-
-            <div className="mobile-chat-actions">
-              <button
-                type="button"
-                className="mobile-action-btn"
-                onClick={() => setIsGroupModalOpen(true)}
-                aria-label="Create group"
-              >
-                <FaPlus />
-              </button>
-              <button
-                type="button"
-                className="mobile-action-btn"
-                onClick={() => navigate("/settings")}
-                aria-label="Open settings"
-              >
-                <FiSettings />
-              </button>
-              <button
-                type="button"
-                className="mobile-action-btn"
-                onClick={logout}
-                aria-label="Log out"
-              >
-                <FiLogOut />
-              </button>
-            </div>
-          </div>
-
-          {/* SEARCH */}
-          <div className="chat-search">
-            <div className="chat-search-row">
-              <div className="chat-search-field">
-                <FaSearch className="search-icon" />
-                <input
-                  type="text"
-                  placeholder="Search people..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="chat-search-input"
-                />
-              </div>
-
-              <button
-                type="button"
-                className="create-group-icon-btn"
-                onClick={() => setIsGroupModalOpen(true)}
-                aria-label="Create group"
-              >
-                <FaPlus />
-              </button>
-            </div>
-          </div>
-
-          <div className="mobile-list-layout">
-            {requests.length > 0 ? (
-              <div className="request-list-section">
-                <p className="request-list-heading">Message requests</p>
-                {requests.map((request) => (
-                  <button
-                    type="button"
-                    key={request._id}
-                    className="request-card"
-                    onClick={() => setSelectedUser(request)}
-                  >
+          {isMobile && viewMode === "chat" ? null : (
+            <>
+              <div className={`mobile-chat-topbar ${mobileTab === "contacts" ? "mobile-topbar-contacts" : "mobile-topbar-chats"}`}>
+                <div className="mobile-chat-brand">
+                  <div className="mobile-chat-avatar">
                     <img
-                      src={request.profilePic || "/avatar.png"}
-                      alt={request.username}
-                      className="request-card-avatar"
+                      src={authUser?.profilePic || "/avatar.png"}
+                      alt={authUser?.username || "User"}
                     />
-                    <div className="request-card-content">
-                      <div className="request-card-top">
-                        <h4>{request.username}</h4>
-                        <span className="request-card-badge">{request.unreadCount || 1}</span>
-                      </div>
-                      <p>
-                        {request.lastMessage
-                          ? request.lastMessage
-                          : request.lastMessageHasImage
-                            ? "Photo"
-                            : "Sent you a message request"}
-                      </p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            ) : null}
+                  </div>
 
-            {filteredGroups.length > 0 ? (
-              <div className="group-list-section">
-                <p className="group-list-heading">Groups</p>
-                {filteredGroups.map((group) => (
+                  <div className="mobile-chat-copy">
+                    <span className="mobile-chat-title">
+                      {mobileTab === "contacts" ? "People" : "Chatify"}
+                    </span>
+                    <span className="mobile-chat-subtitle">
+                      {mobileTab === "contacts"
+                        ? "Browse contacts and start new chats"
+                        : "Your conversations, groups, and requests"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mobile-chat-actions">
                   <button
                     type="button"
-                    key={group._id}
-                    className="group-card"
-                    onClick={() => setSelectedUser({ ...group, isGroup: true })}
+                    className="mobile-action-btn"
+                    onClick={() => setIsGroupModalOpen(true)}
+                    aria-label="Create group"
                   >
-                    <div className="group-card-avatar">
-                      {group.image ? (
-                        <img src={group.image} alt={group.name} />
-                      ) : (
-                        <FaUsers />
-                      )}
-                    </div>
-                    <div className="group-card-content">
-                      <div className="group-card-top">
-                        <h4>{group.name}</h4>
-                        {group.unreadCount > 0 ? (
-                          <span className="group-unread-badge">{group.unreadCount}</span>
-                        ) : (
-                          <span>
-                            {group.lastMessageAt
-                              ? new Date(group.lastMessageAt).toLocaleDateString([], {
-                                  month: "short",
-                                  day: "numeric",
-                                })
-                              : ""}
-                          </span>
-                        )}
-                      </div>
-                      <p>
-                        {group.lastMessage
-                          ? group.lastMessage
-                          : group.lastMessageHasImage
-                            ? "Photo"
-                            : `${group.members?.length || 0} members`}
-                      </p>
-                    </div>
+                    <FaPlus />
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    className="mobile-action-btn"
+                    onClick={() => navigate("/settings")}
+                    aria-label="Open settings"
+                  >
+                    <FiSettings />
+                  </button>
+                  <button
+                    type="button"
+                    className="mobile-action-btn"
+                    onClick={logout}
+                    aria-label="Log out"
+                  >
+                    <FiLogOut />
+                  </button>
+                </div>
               </div>
-            ) : null}
 
-            <ChatList search={search} hideEmptyState sectionTitle="Recent chats" />
-            <ContactList search={search} hideEmptyState sectionTitle="All contacts" />
-          </div>
+              <div className="mobile-tab-switcher">
+                <button
+                  type="button"
+                  className={mobileTab === "chats" ? "active" : ""}
+                  onClick={() => setMobileTab("chats")}
+                >
+                  Chats
+                </button>
+                <button
+                  type="button"
+                  className={mobileTab === "contacts" ? "active" : ""}
+                  onClick={() => setMobileTab("contacts")}
+                >
+                  Contacts
+                </button>
+              </div>
+
+              <div className="chat-search">
+                <div className="chat-search-row">
+                  <div className="chat-search-field">
+                    <FaSearch className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder={mobileTab === "contacts" ? "Search contacts..." : "Search people..."}
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      className="chat-search-input"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    className="create-group-icon-btn"
+                    onClick={() => setIsGroupModalOpen(true)}
+                    aria-label="Create group"
+                  >
+                    <FaPlus />
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {isMobile ? (
+            <div className="mobile-list-layout">
+              {viewMode === "list" && mobileTab === "chats" ? (
+                <>
+                  {renderRequests()}
+                  {renderGroupRequests()}
+                  {renderGroupList()}
+                  <ChatList search={search} hideEmptyState sectionTitle="Recent chats" />
+                </>
+              ) : null}
+              {viewMode === "list" && mobileTab === "contacts" ? (
+                <ContactList search={search} hideEmptyState sectionTitle="All contacts" />
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="desktop-list-layout">
             {activeTab === "chats" ? (
               <>
-                {requests.length > 0 ? (
-                  <div className="request-list-section desktop-group-list">
-                    <p className="request-list-heading">Message requests</p>
-                    {requests.map((request) => (
-                      <button
-                        type="button"
-                        key={request._id}
-                        className="request-card"
-                        onClick={() => setSelectedUser(request)}
-                      >
-                        <img
-                          src={request.profilePic || "/avatar.png"}
-                          alt={request.username}
-                          className="request-card-avatar"
-                        />
-                        <div className="request-card-content">
-                          <div className="request-card-top">
-                            <h4>{request.username}</h4>
-                            <span className="request-card-badge">{request.unreadCount || 1}</span>
-                          </div>
-                          <p>
-                            {request.lastMessage
-                              ? request.lastMessage
-                              : request.lastMessageHasImage
-                                ? "Photo"
-                                : "Sent you a message request"}
-                          </p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-
-                {filteredGroups.length > 0 ? (
-                  <div className="group-list-section desktop-group-list">
-                    <p className="group-list-heading">Groups</p>
-                    {filteredGroups.map((group) => (
-                      <button
-                        type="button"
-                        key={group._id}
-                        className="group-card"
-                        onClick={() => setSelectedUser({ ...group, isGroup: true })}
-                      >
-                        <div className="group-card-avatar">
-                          {group.image ? (
-                            <img src={group.image} alt={group.name} />
-                          ) : (
-                            <FaUsers />
-                          )}
-                        </div>
-                        <div className="group-card-content">
-                          <div className="group-card-top">
-                            <h4>{group.name}</h4>
-                            {group.unreadCount > 0 ? (
-                              <span className="group-unread-badge">{group.unreadCount}</span>
-                            ) : (
-                              <span>
-                                {group.lastMessageAt
-                                  ? new Date(group.lastMessageAt).toLocaleDateString([], {
-                                      month: "short",
-                                      day: "numeric",
-                                    })
-                                  : ""}
-                              </span>
-                            )}
-                          </div>
-                          <p>
-                            {group.lastMessage
-                              ? group.lastMessage
-                              : group.lastMessageHasImage
-                                ? "Photo"
-                                : `${group.members?.length || 0} members`}
-                          </p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
+                {renderRequests()}
+                {renderGroupRequests()}
+                {renderGroupList()}
                 <ChatList search={search} />
               </>
             ) : null}
-            {activeTab === "contacts" && <ContactList search={search} />}
+            {activeTab === "groups" ? (
+              <>
+                {renderGroupRequests()}
+                {renderGroupList()}
+              </>
+            ) : null}
+            {activeTab === "contacts" ? <ContactList search={search} /> : null}
           </div>
-
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
       <div className="right-side">
-        {selectedUser ? <ChatContainer /> : <NoConversationPlaceholder />}
+        {!isMobile ? (
+          selectedUser ? <ChatContainer /> : <NoConversationPlaceholder />
+        ) : null}
+        {isMobile && viewMode === "chat" ? <ChatContainer /> : null}
       </div>
 
       {isGroupModalOpen ? (
@@ -341,7 +381,11 @@ function Chat() {
                 <h3>Create Group</h3>
                 <p>Choose a name and add members.</p>
               </div>
-              <button type="button" className="group-modal-close" onClick={() => setIsGroupModalOpen(false)}>
+              <button
+                type="button"
+                className="group-modal-close"
+                onClick={() => setIsGroupModalOpen(false)}
+              >
                 x
               </button>
             </div>
@@ -381,7 +425,6 @@ function Chat() {
           </div>
         </div>
       ) : null}
-
     </div>
   );
 }

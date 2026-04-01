@@ -68,6 +68,21 @@ async function getNormalizedGroupsForUser(userId) {
   });
 }
 
+async function getNormalizedGroupInvitesForUser(userId) {
+  const groups = await Group.find({ pendingInvites: userId })
+    .populate("members", "_id username profilePic")
+    .populate("creatorId", "_id username profilePic")
+    .sort({ updatedAt: -1 })
+    .lean();
+
+  return groups.map((group) => ({
+    ...group,
+    isGroup: true,
+    isGroupRequest: true,
+    unreadCount: 1,
+  }));
+}
+
 const createGroup = async (req, res) => {
   try {
     const { name, description = "", memberIds = [] } = req.body;
@@ -98,6 +113,7 @@ const createGroup = async (req, res) => {
       description: description.trim(),
       creatorId,
       members: uniqueMembers,
+      pendingInvites: [],
       image: DEFAULT_GROUP_IMAGE,
     });
 
@@ -119,6 +135,16 @@ const getGroups = async (req, res) => {
     res.status(200).json(normalizedGroups);
   } catch (error) {
     console.error("Error fetching groups:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getGroupInvites = async (req, res) => {
+  try {
+    const invites = await getNormalizedGroupInvitesForUser(req.user._id);
+    res.status(200).json(invites);
+  } catch (error) {
+    console.error("Error fetching group invites:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -270,7 +296,9 @@ const addGroupMembers = async (req, res) => {
     }
 
     const newMemberIds = [...new Set(memberIds.map(String))].filter(
-      (memberId) => !group.members.some((existing) => existing.toString() === memberId)
+      (memberId) =>
+        !group.members.some((existing) => existing.toString() === memberId) &&
+        !group.pendingInvites.some((existing) => existing.toString() === memberId)
     );
 
     if (!newMemberIds.length) {
@@ -282,12 +310,16 @@ const addGroupMembers = async (req, res) => {
       return res.status(400).json({ message: "Some selected members were not found" });
     }
 
-    group.members.push(...newMemberIds);
+    group.pendingInvites.push(...newMemberIds);
     await group.save();
 
     const updatedGroup = await Group.findById(group._id)
       .populate("members", "_id username profilePic")
       .populate("creatorId", "_id username");
+
+    newMemberIds.forEach((memberId) => {
+      emitToUser(memberId, "groupInviteUpdated", { groupId: group._id.toString() });
+    });
 
     res.status(200).json({ ...updatedGroup.toObject(), isGroup: true });
   } catch (error) {
@@ -363,13 +395,71 @@ const leaveGroup = async (req, res) => {
   }
 };
 
+const acceptGroupInvite = async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const { id } = req.params;
+
+    const group = await Group.findById(id);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    if (!group.pendingInvites.some((member) => member.toString() === userId)) {
+      return res.status(403).json({ message: "No pending invite found for this group" });
+    }
+
+    group.pendingInvites = group.pendingInvites.filter(
+      (member) => member.toString() !== userId
+    );
+    group.members.push(req.user._id);
+    await group.save();
+
+    emitToUser(group.creatorId, "groupInviteUpdated", { groupId: group._id.toString() });
+    res.status(200).json({ message: "Group invite accepted" });
+  } catch (error) {
+    console.error("Error accepting group invite:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const rejectGroupInvite = async (req, res) => {
+  try {
+    const userId = req.user._id.toString();
+    const { id } = req.params;
+
+    const group = await Group.findById(id);
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+
+    if (!group.pendingInvites.some((member) => member.toString() === userId)) {
+      return res.status(403).json({ message: "No pending invite found for this group" });
+    }
+
+    group.pendingInvites = group.pendingInvites.filter(
+      (member) => member.toString() !== userId
+    );
+    await group.save();
+
+    emitToUser(group.creatorId, "groupInviteUpdated", { groupId: group._id.toString() });
+    res.status(200).json({ message: "Group invite rejected" });
+  } catch (error) {
+    console.error("Error rejecting group invite:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   createGroup,
   getGroups,
+  getGroupInvites,
   getGroupMessages,
   sendGroupMessage,
   updateGroup,
   addGroupMembers,
   removeGroupMember,
   leaveGroup,
+  acceptGroupInvite,
+  rejectGroupInvite,
 };

@@ -30,10 +30,18 @@ const groupSchema = new mongoose.Schema(
         required: true,
       },
     ],
+    pendingInvites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
+
+groupSchema.path("pendingInvites").default(() => []);
 
 module.exports = mongoose.model("Group", groupSchema);

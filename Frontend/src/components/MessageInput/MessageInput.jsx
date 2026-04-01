@@ -11,8 +11,15 @@ function MessageInput() {
   const fileInputRef = useRef(null);
   const { sendMessage, relationshipStatus, selectedUser } = useChatStore();
   const isGroup = Boolean(selectedUser?.isGroup || selectedUser?.groupId);
-  const canSend = isGroup || relationshipStatus === "accepted" || relationshipStatus === "pending_outgoing" || relationshipStatus === "none";
-  const placeholder = !isGroup && relationshipStatus === "blocked"
+  const isGroupRequest = Boolean(selectedUser?.isGroupRequest);
+  const canSend =
+    (!isGroupRequest && isGroup) ||
+    relationshipStatus === "accepted" ||
+    relationshipStatus === "pending_outgoing" ||
+    relationshipStatus === "none";
+  const placeholder = isGroupRequest
+    ? "Accept the group invite to start chatting"
+    : !isGroup && relationshipStatus === "blocked"
     ? "You blocked this user"
     : !isGroup && relationshipStatus === "pending_incoming"
       ? "Accept the request to reply"
@@ -75,7 +82,7 @@ function MessageInput() {
           onChange={(e) => setText(e.target.value)}
           className="message-input"
           placeholder={placeholder}
-          disabled={!canSend || (!isGroup && relationshipStatus === "pending_incoming")}
+          disabled={isGroupRequest || !canSend || (!isGroup && relationshipStatus === "pending_incoming")}
         />
 
         <input
@@ -90,14 +97,14 @@ function MessageInput() {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           className={`image-btn ${imagePreview ? "active" : ""}`}
-          disabled={!canSend || (!isGroup && relationshipStatus === "pending_incoming")}
+          disabled={isGroupRequest || !canSend || (!isGroup && relationshipStatus === "pending_incoming")}
         >
           <ImageIcon size={20} />
         </button>
 
         <button
           type="submit"
-          disabled={!canSend || (!isGroup && relationshipStatus === "pending_incoming") || (!text.trim() && !imagePreview)}
+          disabled={isGroupRequest || !canSend || (!isGroup && relationshipStatus === "pending_incoming") || (!text.trim() && !imagePreview)}
           className="send-btn"
         >
           <SendIcon size={20} />

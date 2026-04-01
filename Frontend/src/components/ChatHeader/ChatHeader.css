@@ -2,15 +2,15 @@ body{
   font-family: ui-sans-serif, system-ui,"Segoe UI", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
 }
 
-
 /* Chat Header */
 .chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
-  background:rgb(98, 213, 255);
+  background: linear-gradient(135deg, #38bdf8, #0f6fcf);
   border-bottom: 1px solid #e2e8f0;
+  min-width: 0;
 }
 
 /* LEFT SECTION */
@@ -18,6 +18,7 @@ body{
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 /* AVATAR */
@@ -68,11 +69,17 @@ body{
   font-size: 17px;
   color: #ffffff;
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .status-text {
   font-size: 13px;
   color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-header-actions {
@@ -153,6 +160,10 @@ body{
   gap: 12px;
 }
 
+.group-manage-footer {
+  flex-wrap: wrap;
+}
+
 .group-manage-header h3,
 .group-manage-header p {
   margin: 0;
@@ -201,6 +212,14 @@ body{
   padding: 10px 12px;
   border-radius: 14px;
   background: #f8fafc;
+}
+
+.group-member-chip span,
+.group-add-option span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .group-member-chip button {
@@ -284,6 +303,7 @@ body{
 
   .chat-user-info {
     min-width: 0;
+    gap: 10px;
   }
 
   .user-details h3 {
@@ -292,5 +312,96 @@ body{
 
   .status-text {
     font-size: 12px;
+  }
+
+  .chat-header-actions {
+    gap: 6px;
+  }
+
+  .manage-btn,
+  .close-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .group-manage-modal {
+    width: 100%;
+    max-height: min(88vh, 760px);
+    border-radius: 20px;
+    padding: 16px;
+  }
+
+  .group-manage-body {
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .group-member-chip,
+  .group-add-option {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .group-save-btn,
+  .group-leave-btn {
+    flex: 1 1 160px;
+    min-height: 44px;
+  }
+
+  .request-action-bar {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-header {
+    padding: 10px 12px;
+  }
+
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .user-details h3 {
+    font-size: 14px;
+  }
+
+  .status-text {
+    font-size: 11px;
+  }
+
+  .request-accept-btn,
+  .request-reject-btn,
+  .request-block-btn,
+  .request-info-pill {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .group-manage-backdrop {
+    padding: 10px;
+    align-items: flex-end;
+  }
+
+  .group-manage-modal {
+    max-height: 90vh;
+    border-radius: 18px 18px 0 0;
+    padding: 14px;
+  }
+
+  .group-manage-header,
+  .group-manage-footer {
+    gap: 10px;
+  }
+
+  .group-manage-input {
+    min-height: 46px;
+    font-size: 16px;
   }
 }

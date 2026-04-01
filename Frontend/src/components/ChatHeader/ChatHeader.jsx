@@ -13,6 +13,8 @@ function ChatHeader() {
     removeGroupMember,
     updateGroup,
     leaveGroup,
+    acceptGroupInvite,
+    rejectGroupInvite,
     relationshipStatus,
     acceptRequest,
     rejectRequest,
@@ -39,21 +41,25 @@ function ChatHeader() {
   if (!selectedUser) return null;
 
   const isGroup = Boolean(selectedUser.isGroup || selectedUser.groupId);
+  const isGroupRequest = Boolean(selectedUser.isGroupRequest);
   const isCreator =
     isGroup &&
+    !isGroupRequest &&
     String(selectedUser.creatorId?._id || selectedUser.creatorId) === String(authUser?._id);
   const isOnline = onlineUsers.map(String).includes(String(selectedUser._id));
   const subtitle = isGroup
-    ? `${selectedUser.members?.length || 0} members`
+    ? isGroupRequest
+      ? `Invitation from ${selectedUser.creatorId?.username || "group admin"}`
+      : `${selectedUser.members?.length || 0} members`
     : relationshipStatus === "pending_incoming"
       ? "Wants to send you messages"
       : relationshipStatus === "pending_outgoing"
         ? "Request sent"
         : relationshipStatus === "blocked"
           ? "Blocked"
-    : isOnline
-      ? "Online"
-      : "Offline";
+          : isOnline
+            ? "Online"
+            : "Offline";
   const availableContacts = useMemo(() => {
     if (!isGroup) {
       return [];
@@ -116,7 +122,7 @@ function ChatHeader() {
         </div>
 
         <div className="chat-header-actions">
-          {isGroup ? (
+          {isGroup && !isGroupRequest ? (
             <button className="manage-btn" onClick={() => setIsManageOpen(true)}>
               <Settings2 size={18} />
             </button>
@@ -130,6 +136,17 @@ function ChatHeader() {
           </button>
         </div>
       </div>
+
+      {isGroupRequest ? (
+        <div className="request-action-bar">
+          <button className="request-accept-btn" onClick={() => acceptGroupInvite(selectedUser._id)}>
+            Accept Group
+          </button>
+          <button className="request-reject-btn" onClick={() => rejectGroupInvite(selectedUser._id)}>
+            Reject
+          </button>
+        </div>
+      ) : null}
 
       {!isGroup && relationshipStatus !== "accepted" ? (
         <div className="request-action-bar">
@@ -158,7 +175,7 @@ function ChatHeader() {
         </div>
       ) : null}
 
-      {isManageOpen ? (
+      {isManageOpen && !isGroupRequest ? (
         <div className="group-manage-backdrop" onClick={() => setIsManageOpen(false)}>
           <div className="group-manage-modal" onClick={(e) => e.stopPropagation()}>
             <div className="group-manage-header">
@@ -224,7 +241,7 @@ function ChatHeader() {
                 </button>
               ) : null}
               <button className="group-leave-btn" onClick={handleLeaveGroup}>
-                Leave Group
+                Exit Group
               </button>
             </div>
           </div>

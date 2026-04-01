@@ -17,7 +17,7 @@
     radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 32%),
     linear-gradient(180deg, #eaf6ff 0%, #f8fbff 48%, #f3f7fb 100%);
   padding: 20px;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* MAIN CONTAINER */
@@ -286,74 +286,38 @@
 /* TABLET */
 @media (max-width: 900px) {
   .signup-wrapper {
-    padding: 0;
+    padding: 12px;
     align-items: stretch;
   }
 
   .signup-container {
-    max-width: none;
+    width: 100%;
+    max-width: 520px;
     max-height: none;
+    min-height: min(100dvh - 24px, 860px);
   }
 
   .signup-content {
     flex-direction: column;
-    min-height: 100dvh;
-    border-radius: 0;
-    box-shadow: none;
+    min-height: 100%;
+    border-radius: 24px;
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
   }
 
   .signup-right {
-    display: none; /* hide right side like your login page */
+    display: flex;
+    order: 2;
+    min-height: 210px;
+    padding: 22px 20px 26px;
   }
 
   .signup-left {
-    padding: 24px 20px;
+    order: 1;
+    padding: 30px 26px 24px;
   }
 
-  .mobile-brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    padding: 14px;
-    border-radius: 18px;
-    background: linear-gradient(135deg, rgba(30, 144, 255, 0.08), rgba(0, 207, 255, 0.14));
-  }
-
-  .mobile-brand-mark {
-    width: 56px;
-    height: 56px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #1e90ff, #00cfff);
-    box-shadow: 0 10px 24px rgba(30, 144, 255, 0.22);
-    flex-shrink: 0;
-  }
-
-  .mobile-brand-logo {
-    width: 34px;
-    height: 34px;
-    object-fit: contain;
-  }
-
-  .mobile-brand-copy {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .mobile-brand-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0f172a;
-  }
-
-  .mobile-brand-text {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.35;
+  .form-box {
+    max-width: 100%;
   }
 }
 
@@ -361,16 +325,27 @@
 
 /* MOBILE */
 @media (max-width: 480px) {
-  .signup-content {
-    border-radius: 0;
+  .signup-wrapper {
+    padding: 0;
+  }
+
+  .signup-container {
+    max-width: none;
+    min-height: 100dvh;
   }
 
   .signup-left {
-    padding: 18px 16px;
+    padding: 28px 20px 20px;
+    align-items: flex-start;
   }
 
   .form-box {
     max-width: 100%;
+  }
+
+  .input-wrapper {
+    min-height: 52px;
+    padding: 13px 12px;
   }
 
   .input-wrapper input {
@@ -382,7 +357,8 @@
   }
 
   .submit-btn {
-    padding: 13px;
+    padding: 14px;
+    min-height: 52px;
   }
 
   .heading-icon {
@@ -399,21 +375,49 @@
     font-size: 13px;
   }
 
-  .mobile-brand {
-    margin-bottom: 18px;
-    padding: 12px;
-    border-radius: 16px;
+  .signup-wrapper {
+    padding: 8px;
   }
 
-  .mobile-brand-mark {
-    width: 50px;
-    height: 50px;
-    border-radius: 16px;
+  .signup-content {
+    border-radius: 0;
+    box-shadow: none;
   }
 
-  .mobile-brand-logo {
-    width: 30px;
-    height: 30px;
+  .signup-right {
+    min-height: 172px;
+    padding: 20px 18px 24px;
+  }
+
+  .image-box {
+    padding: 10px 14px;
+    border-radius: 14px;
+  }
+
+  .image-box img {
+    width: 82px;
+  }
+
+  .image-text h3 {
+    font-size: 22px;
+  }
+
+  .badge {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .signup-left {
+    padding: 24px 16px 18px;
+  }
+
+  .signup-right {
+    padding: 18px 16px 22px;
+  }
+
+  .form-heading h2 {
+    font-size: 20px;
   }
 }
 

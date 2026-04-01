@@ -47,6 +47,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .message-input {
@@ -105,11 +106,32 @@
 }
 
 @media (max-width: 480px) {
+  .message-input-wrapper {
+    padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+
   .message-form {
     gap: 8px;
+    align-items: stretch;
   }
 
   .message-input {
     font-size: 16px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .image-btn,
+  .send-btn {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+
+  .image-preview-box {
+    width: 92px;
+    height: 92px;
   }
 }

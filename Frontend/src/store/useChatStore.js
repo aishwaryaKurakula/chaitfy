@@ -16,6 +16,7 @@ export const useChatStore = create((set, get) => ({
   allContacts: [],
   chats: [],
   groups: [],
+  groupRequests: [],
   requests: [],
   blockedUsers: [],
   messages: [],
@@ -79,6 +80,18 @@ export const useChatStore = create((set, get) => ({
         toast.error(error.response?.data?.message || "Failed to load groups");
       }
       set({ groups: [] });
+    }
+  },
+
+  getGroupInvites: async () => {
+    try {
+      const res = await axiosInstance.get("/groups/invites");
+      set({ groupRequests: Array.isArray(res.data) ? res.data : [] });
+    } catch (error) {
+      if (!isAuthError(error)) {
+        toast.error(error.response?.data?.message || "Failed to load group invites");
+      }
+      set({ groupRequests: [] });
     }
   },
 
@@ -214,6 +227,42 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
+  acceptGroupInvite: async (groupId) => {
+    try {
+      await axiosInstance.post(`/groups/${groupId}/accept`);
+      await Promise.all([get().getGroups(), get().getGroupInvites()]);
+
+      const acceptedGroup = get().groups.find((group) => group._id === groupId);
+      if (acceptedGroup) {
+        set({
+          selectedUser: { ...acceptedGroup, isGroup: true },
+          relationshipStatus: "accepted",
+        });
+        await get().getGroupMessages(groupId);
+      }
+
+      toast.success("Group invite accepted");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to accept group invite");
+      throw error;
+    }
+  },
+
+  rejectGroupInvite: async (groupId) => {
+    try {
+      await axiosInstance.post(`/groups/${groupId}/reject`);
+      set((state) => ({
+        groupRequests: state.groupRequests.filter((group) => group._id !== groupId),
+        selectedUser: state.selectedUser?._id === groupId ? null : state.selectedUser,
+        messages: state.selectedUser?._id === groupId ? [] : state.messages,
+      }));
+      toast.success("Group invite rejected");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to reject group invite");
+      throw error;
+    }
+  },
+
   getMessagesByUserId: async (userId) => {
     set({ isMessagesLoading: true });
 
@@ -325,9 +374,15 @@ export const useChatStore = create((set, get) => ({
   sendMessage: async (messageData) => {
     const { selectedUser } = get();
     const { authUser } = useAuthStore.getState();
+    const isGroupRequest = Boolean(selectedUser?.isGroupRequest);
 
     if (!selectedUser?._id || !authUser?._id) {
       toast.error("Select a user before sending a message");
+      return;
+    }
+
+    if (isGroupRequest) {
+      toast.error("Accept the group invite before sending messages");
       return;
     }
 
@@ -573,12 +628,19 @@ export const useChatStore = create((set, get) => ({
       }
     };
 
+    const handleGroupInviteUpdated = () => {
+      get().getGroups();
+      get().getGroupInvites();
+    };
+
     socket.off("newMessage");
     socket.on("newMessage", handleNewMessage);
     socket.off("newGroupMessage");
     socket.on("newGroupMessage", handleNewGroupMessage);
     socket.off("requestAccepted");
     socket.on("requestAccepted", handleRequestAccepted);
+    socket.off("groupInviteUpdated");
+    socket.on("groupInviteUpdated", handleGroupInviteUpdated);
     set({ messageListenerAttachedTo: socket.id });
   },
 
@@ -593,6 +655,7 @@ export const useChatStore = create((set, get) => ({
     socket.off("newMessage");
     socket.off("newGroupMessage");
     socket.off("requestAccepted");
+    socket.off("groupInviteUpdated");
     set({ messageListenerAttachedTo: null });
   },
 }));

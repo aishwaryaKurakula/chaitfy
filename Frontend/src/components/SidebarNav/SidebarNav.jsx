@@ -1,6 +1,7 @@
 import React from "react";
 import {
   FaComments,
+  FaUsers,
   FaAddressBook,
   FaCog,
   FaSignOutAlt,
@@ -23,7 +24,7 @@ function SidebarNav() {
 
   const navItems = [
     { name: "chats", icon: <FaComments /> },
-    // { name: "users", icon: <FaUsers /> },
+    { name: "groups", icon: <FaUsers /> },
     { name: "contacts", icon: <FaAddressBook /> },
     { name: "settings", icon: <FaCog /> },
   ];

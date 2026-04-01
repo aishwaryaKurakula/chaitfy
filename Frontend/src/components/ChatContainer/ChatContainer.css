@@ -27,6 +27,7 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  min-width: 0;
 }
 
 .message-row.own {
@@ -55,6 +56,7 @@
   flex-direction: column;
   gap: 4px;
   font-size: 14px;
+  min-width: 0;
 }
 
 /* Own Message */
@@ -69,22 +71,6 @@
   box-shadow: none; /* remove heavy glow */
 }
 
-/* Other Message */
-.message-row.other .message-bubble {
-  background: #ffffff;
-  color: #0f172a;
-
-  border: 1px solid #e2e8f0;
-  border-bottom-left-radius: 4px;
-}
-
-
-
-
-
-
-
-/* Other Message */
 .message-row.other .message-bubble {
   background: #ffffff;
   color: #0f172a;
@@ -96,6 +82,7 @@
 /* Text */
 .message-text {
   line-height: 1.4;
+  word-break: break-word;
 }
 
 .message-sender-name {
@@ -198,5 +185,42 @@
     max-width: calc(100% - 44px);
     padding: 10px 12px;
     font-size: 13px;
+  }
+
+  .message-action-backdrop {
+    padding: 10px;
+  }
+
+  .message-action-sheet {
+    width: 100%;
+    border-radius: 18px 18px 0 0;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-body {
+    padding: 12px 10px;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .message-bubble {
+    max-width: calc(100% - 38px);
+    padding: 9px 11px;
+    font-size: 12.5px;
+    border-radius: 14px;
+  }
+
+  .message-image {
+    max-width: min(180px, 100%);
+  }
+
+  .message-delete-btn,
+  .message-cancel-btn {
+    min-height: 46px;
   }
 }
