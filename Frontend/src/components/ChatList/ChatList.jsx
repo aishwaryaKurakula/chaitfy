@@ -38,6 +38,28 @@ function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
     return hideEmptyState ? null : <NoChatsFound />;
   }
 
+  const formatLastMessageTime = (timestamp) => {
+    if (!timestamp) {
+      return "";
+    }
+
+    const date = new Date(timestamp);
+    const now = new Date();
+    const isSameDay = date.toDateString() === now.toDateString();
+
+    if (isSameDay) {
+      return date.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+
+    return date.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="chat-list-section">
       {sectionTitle ? <p className="chat-list-heading">{sectionTitle}</p> : null}
@@ -64,7 +86,25 @@ function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
                 </div>
               </div>
 
-              <h4 className="chat-name">{chat.username}</h4>
+              <div className="chat-meta">
+                <div className="chat-meta-top">
+                  <h4 className="chat-name">{chat.username}</h4>
+                  <span className="chat-time">
+                    {formatLastMessageTime(chat.lastMessageAt)}
+                  </span>
+                </div>
+
+                <div className="chat-meta-bottom">
+                  <p className="chat-preview">
+                    {chat.lastMessage
+                      ? chat.lastMessage
+                      : chat.lastMessageHasImage
+                        ? "Photo"
+                        : "Start a conversation"}
+                  </p>
+                  {isOnline ? <span className="chat-status-pill">Active</span> : null}
+                </div>
+              </div>
             </div>
           </div>
         );

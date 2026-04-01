@@ -108,26 +108,48 @@ const getChatPartners = async (req, res) => {
       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
     }).sort({ createdAt: -1 });
 
-    const chatPartnerIds = [
-      ...new Set(
-        messages.map((msg) =>
-          msg.senderId.equals(loggedInUserId)
-            ? msg.receiverId.toString()
-            : msg.senderId.toString(),
-        ),
-      ),
-    ];
+    const latestMessageByPartnerId = new Map();
+
+    messages.forEach((msg) => {
+      const partnerId = msg.senderId.equals(loggedInUserId)
+        ? msg.receiverId.toString()
+        : msg.senderId.toString();
+
+      if (!latestMessageByPartnerId.has(partnerId)) {
+        latestMessageByPartnerId.set(partnerId, msg);
+      }
+    });
+
+    const chatPartnerIds = [...latestMessageByPartnerId.keys()];
 
     // remove self just in case
     const filteredIds = chatPartnerIds.filter(
       (id) => id !== loggedInUserId.toString(),
     );
 
-    const chatPartners = await User.find({ _id: { $in: filteredIds } }).select(
-      "-password",
-    );
+    const chatPartners = await User.find({ _id: { $in: filteredIds } })
+      .select("-password")
+      .lean();
 
-    res.status(200).json(chatPartners);
+    const orderedChatPartners = filteredIds
+      .map((id) => {
+        const user = chatPartners.find((partner) => partner._id.toString() === id);
+        const latestMessage = latestMessageByPartnerId.get(id);
+
+        if (!user || !latestMessage) {
+          return null;
+        }
+
+        return {
+          ...user,
+          lastMessage: latestMessage.text || "",
+          lastMessageHasImage: Boolean(latestMessage.image),
+          lastMessageAt: latestMessage.createdAt,
+        };
+      })
+      .filter(Boolean);
+
+    res.status(200).json(orderedChatPartners);
   } catch (error) {
     console.error("Error in getChatPartners:", error);
     res.status(500).json({ message: "Internal server error" });
