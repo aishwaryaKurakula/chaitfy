@@ -3,6 +3,18 @@ import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 import axiosInstance, { BACKEND_ORIGIN } from "../lib/axios";
 
+function getRequestErrorMessage(error, fallbackMessage) {
+  if (error?.code === "ECONNABORTED") {
+    return "Request timed out. Please try again.";
+  }
+
+  if (!error?.response) {
+    return "Unable to reach the server. Please check the backend URL and try again.";
+  }
+
+  return error.response?.data?.message || error.message || fallbackMessage;
+}
+
 function getSocketUrl() {
   const envSocketUrl = import.meta.env.VITE_SOCKET_URL;
 
@@ -115,7 +127,7 @@ const useAuthStore = create((set, get) => ({
       toast.success("Account created successfully");
     } catch (error) {
       console.error("Signup error:", error);
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(getRequestErrorMessage(error, "Signup failed"));
     } finally {
       set({ isSigningUp: false });
     }
@@ -138,7 +150,7 @@ const useAuthStore = create((set, get) => ({
       toast.success("Logged in successfully");
     } catch (error) {
       console.error("Login error:", error);
-      toast.error(error.response?.data?.message || error.message);
+      toast.error(getRequestErrorMessage(error, "Login failed"));
     } finally {
       set({ isLoggingIn: false });
     }

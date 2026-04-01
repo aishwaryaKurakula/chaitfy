@@ -31,6 +31,7 @@ console.info("[CHATIFY] API_BASE_URL:", API_BASE_URL, "BACKEND_ORIGIN:", BACKEND
 export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
+  timeout: 15000,
 });
 
 axiosInstance.interceptors.request.use((config) => {
