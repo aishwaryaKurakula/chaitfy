@@ -8,6 +8,7 @@ const {
   sendMessage,
   acceptMessageRequest,
   rejectMessageRequest,
+  markMessagesAsRead,
   blockUser,
   unblockUser,
   deleteMessage,
@@ -28,6 +29,7 @@ router.get("/requests", getIncomingRequests);
 router.get("/blocked", getBlockedUsers);
 router.post("/requests/:id/accept", acceptMessageRequest);
 router.post("/requests/:id/reject", rejectMessageRequest);
+router.post("/read/:id", markMessagesAsRead);
 router.post("/block/:id", blockUser);
 router.post("/unblock/:id", unblockUser);
 router.delete("/:id", deleteMessage);

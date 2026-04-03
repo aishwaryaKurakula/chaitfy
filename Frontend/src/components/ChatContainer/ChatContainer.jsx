@@ -25,24 +25,61 @@ function ChatContainer() {
   const messageEndRef = useRef(null);
   const pressTimerRef = useRef(null);
   const [messageActionTarget, setMessageActionTarget] = useState(null);
+  const selectedUserId = selectedUser?._id;
+  const isGroupChat = Boolean(selectedUser?.isGroup || selectedUser?.groupId);
+  const isGroupRequest = Boolean(selectedUser?.isGroupRequest);
+
+  const renderMessageStatus = (msg) => {
+    if (selectedUser?.isGroup || selectedUser?.groupId || msg.isOptimistic || msg.isUnsent) {
+      return null;
+    }
+
+    const status = msg.status || (msg.readAt ? "read" : msg.deliveredAt ? "delivered" : "sent");
+    const tickLabel = status === "sent" ? "✓" : "✓✓";
+
+    return (
+      <span className={`message-status message-status-${status}`} aria-label={status}>
+        {tickLabel}
+      </span>
+    );
+  };
+
+  const getMessageDateLabel = (value) => {
+    const date = new Date(value);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return "Today";
+    }
+
+    if (date.toDateString() === yesterday.toDateString()) {
+      return "Yesterday";
+    }
+
+    return date.toLocaleDateString([], {
+      day: "numeric",
+      month: "short",
+      year: date.getFullYear() === today.getFullYear() ? undefined : "numeric",
+    });
+  };
 
   /* Fetch messages when user changes */
   useEffect(() => {
-    if (selectedUser?._id) {
-      if (selectedUser.isGroupRequest) {
-        return;
-      }
-
-      if (selectedUser.isGroup || selectedUser.groupId) {
-        getGroupMessages(selectedUser._id);
-      } else {
-        getMessagesByUserId(selectedUser._id);
-      }
+    if (!selectedUserId || isGroupRequest) {
+      return;
     }
-  }, [selectedUser, getGroupMessages, getMessagesByUserId]);
+
+    if (isGroupChat) {
+      getGroupMessages(selectedUserId);
+    } else {
+      getMessagesByUserId(selectedUserId);
+    }
+  }, [selectedUserId, isGroupChat, isGroupRequest, getGroupMessages, getMessagesByUserId]);
 
   useEffect(() => {
-    if (!selectedUser?._id) {
+    if (!selectedUserId) {
       return undefined;
     }
 
@@ -51,7 +88,7 @@ function ChatContainer() {
     return () => {
       unsubscribeFromMessages();
     };
-  }, [selectedUser?._id, subscribeToMessages, unsubscribeFromMessages]);
+  }, [selectedUserId, subscribeToMessages, unsubscribeFromMessages]);
 
   /* Auto scroll to bottom */
   useEffect(() => {
@@ -82,7 +119,7 @@ function ChatContainer() {
         ) : messages.length === 0 ? (
           <NoConversationPlaceholder name={selectedUser.username} />
         ) : (
-          messages.map((msg) => {
+          messages.map((msg, index) => {
             const senderId = msg.senderId?._id || msg.senderId;
             const senderName = msg.senderId?.username || selectedUser.username;
             const senderAvatar =
@@ -90,68 +127,84 @@ function ChatContainer() {
               selectedUser.profilePic ||
               "/avatar.png";
             const isOwnMessage = String(senderId) === String(authUser?._id);
+            const currentDateLabel = getMessageDateLabel(msg.createdAt);
+            const previousDateLabel =
+              index > 0 ? getMessageDateLabel(messages[index - 1].createdAt) : null;
+            const showDateDivider = index === 0 || currentDateLabel !== previousDateLabel;
 
             return (
-              <div
-                key={msg._id}
-                className={`message-row ${isOwnMessage ? "own" : "other"}`}
-                onMouseDown={() => {
-                  if (!isOwnMessage || msg.isOptimistic) return;
-                  pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
-                }}
-                onMouseUp={() => clearTimeout(pressTimerRef.current)}
-                onMouseLeave={() => clearTimeout(pressTimerRef.current)}
-                onTouchStart={() => {
-                  if (!isOwnMessage || msg.isOptimistic) return;
-                  pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
-                }}
-                onTouchEnd={() => clearTimeout(pressTimerRef.current)}
-              >
+              <div key={msg._id}>
+                {showDateDivider ? (
+                  <div className="message-date-divider">
+                    <span>{currentDateLabel}</span>
+                  </div>
+                ) : null}
 
-                {!isOwnMessage && (
-                  <img
-                    src={senderAvatar}
-                    alt="profile"
-                    className="avatar"
-                  />
-                )}
+                <div
+                  className={`message-row ${isOwnMessage ? "own" : "other"}`}
+                  onMouseDown={() => {
+                    if (!isOwnMessage || msg.isOptimistic) return;
+                    pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
+                  }}
+                  onMouseUp={() => clearTimeout(pressTimerRef.current)}
+                  onMouseLeave={() => clearTimeout(pressTimerRef.current)}
+                  onTouchStart={() => {
+                    if (!isOwnMessage || msg.isOptimistic) return;
+                    pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
+                  }}
+                  onTouchEnd={() => clearTimeout(pressTimerRef.current)}
+                >
 
-                <div className="message-bubble">
-                  {selectedUser.isGroup && !isOwnMessage ? (
-                    <div className="message-sender-name">{senderName}</div>
-                  ) : null}
-
-                  {msg.image && (
+                  {!isOwnMessage && (
                     <img
-                      src={msg.image}
-                      alt="shared"
-                      className="message-image"
+                      src={senderAvatar}
+                      alt="profile"
+                      className="avatar"
                     />
                   )}
 
-                  {msg.text && (
-                    <div className="message-text">
-                      {msg.text}
-                    </div>
-                  )}
+                  <div className="message-bubble">
+                    {selectedUser.isGroup && !isOwnMessage ? (
+                      <div className="message-sender-name">{senderName}</div>
+                    ) : null}
 
-                  <div className="message-time">
-                    {new Date(msg.createdAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    })}
+                    {msg.image && !msg.isUnsent && (
+                      <img
+                        src={msg.image}
+                        alt="shared"
+                        className="message-image"
+                      />
+                    )}
+
+                    {msg.isUnsent ? (
+                      <div className="message-text message-text-unsent">
+                        {isOwnMessage ? "You unsent this message" : "This message was unsent"}
+                      </div>
+                    ) : msg.text ? (
+                      <div className="message-text">
+                        {msg.text}
+                      </div>
+                    ) : null}
+
+                    <div className="message-meta">
+                      {new Date(msg.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
+                      {isOwnMessage ? renderMessageStatus(msg) : null}
+                    </div>
+
                   </div>
 
+                  {isOwnMessage && (
+                    <img
+                      src={authUser.profilePic || "/avatar.png"}
+                      alt="profile"
+                      className="avatar"
+                    />
+                  )}
+
                 </div>
-
-                {isOwnMessage && (
-                  <img
-                    src={authUser.profilePic || "/avatar.png"}
-                    alt="profile"
-                    className="avatar"
-                  />
-                )}
-
               </div>
             );
           })
@@ -173,7 +226,7 @@ function ChatContainer() {
                 setMessageActionTarget(null);
               }}
             >
-              Delete message
+              Unsend message
             </button>
             <button
               className="message-cancel-btn"

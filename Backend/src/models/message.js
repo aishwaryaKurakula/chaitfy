@@ -26,6 +26,10 @@ const messageSchema = new mongoose.Schema({
     image: {
         type: String,
     },
+    deliveredAt: {
+        type: Date,
+        default: null,
+    },
     readAt: {
         type: Date,
         default: null,
@@ -38,6 +42,14 @@ const messageSchema = new mongoose.Schema({
         type: String,
         enum: ["pending", "accepted", "rejected"],
         default: "accepted",
+    },
+    isUnsent: {
+        type: Boolean,
+        default: false,
+    },
+    unsentAt: {
+        type: Date,
+        default: null,
     },
 },
    {

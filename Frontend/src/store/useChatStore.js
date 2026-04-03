@@ -39,6 +39,43 @@ export const useChatStore = create((set, get) => ({
       ),
     })),
 
+  markMessagesAsRead: async (userId) => {
+    if (!userId) {
+      return;
+    }
+
+    try {
+      await axiosInstance.post(`/messages/read/${userId}`);
+
+      set((state) => ({
+        messages: state.messages.map((message) => {
+          const senderId = message.senderId?._id || message.senderId;
+          const receiverId = message.receiverId?._id || message.receiverId;
+
+          if (
+            String(senderId) === String(userId) &&
+            String(receiverId) === String(useAuthStore.getState().authUser?._id) &&
+            !message.isUnsent
+          ) {
+            const timestamp = new Date().toISOString();
+            return {
+              ...message,
+              deliveredAt: message.deliveredAt || timestamp,
+              readAt: timestamp,
+              status: "read",
+            };
+          }
+
+          return message;
+        }),
+      }));
+    } catch (error) {
+      if (!isAuthError(error)) {
+        console.error("Failed to mark messages as read:", error);
+      }
+    }
+  },
+
   getAllContacts: async () => {
     set({ isUsersLoading: true });
 
@@ -271,6 +308,10 @@ export const useChatStore = create((set, get) => ({
       set({
         messages: Array.isArray(res.data?.messages) ? res.data.messages : [],
         relationshipStatus: res.data?.relationshipStatus || "none",
+        selectedUser:
+          get().selectedUser?._id === userId
+            ? { ...get().selectedUser, ...(res.data?.otherUser || {}) }
+            : get().selectedUser,
       });
       get().getMyChatPartners();
       get().getRequests();
@@ -388,7 +429,7 @@ export const useChatStore = create((set, get) => ({
 
     const tempId = `temp-${Date.now()}`;
     const isGroup = Boolean(selectedUser.groupId || selectedUser.isGroup);
-    const optimisticMessage = {
+      const optimisticMessage = {
       _id: tempId,
       senderId: authUser._id,
       receiverId: isGroup ? null : selectedUser._id,
@@ -398,6 +439,10 @@ export const useChatStore = create((set, get) => ({
       createdAt: new Date().toISOString(),
       isOptimistic: true,
       readBy: isGroup ? [authUser._id] : [],
+      deliveredAt: null,
+      readAt: null,
+      status: isGroup ? null : "sent",
+      isUnsent: false,
       requestStatus: isGroup ? "accepted" : get().relationshipStatus === "accepted" ? "accepted" : "pending",
     };
 
@@ -460,7 +505,16 @@ export const useChatStore = create((set, get) => ({
       const { selectedUser } = get();
 
       set((state) => ({
-        messages: state.messages.filter((message) => message._id !== messageId),
+        messages: state.messages.map((message) =>
+          message._id === messageId
+            ? {
+                ...message,
+                text: "",
+                image: "",
+                isUnsent: true,
+              }
+            : message
+        ),
       }));
 
       if (selectedUser?.isGroup || selectedUser?.groupId) {
@@ -471,7 +525,7 @@ export const useChatStore = create((set, get) => ({
         await get().getMyChatPartners();
       }
 
-      toast.success("Message deleted");
+      toast.success("Message unsent");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete message");
       throw error;
@@ -524,7 +578,7 @@ export const useChatStore = create((set, get) => ({
 
         const updatedChat = {
           ...existingChat,
-          lastMessage: newMessage.text || "",
+          lastMessage: newMessage.isUnsent ? "Message unsent" : newMessage.text || "",
           lastMessageHasImage: Boolean(newMessage.image),
           lastMessageAt: newMessage.createdAt,
           unreadCount:
@@ -557,6 +611,14 @@ export const useChatStore = create((set, get) => ({
         }
         return { messages: [...state.messages, newMessage] };
       });
+
+      if (
+        String(newMessage.senderId) === String(selectedUserId) &&
+        String(newMessage.receiverId) === String(authUserId) &&
+        newMessage.requestStatus === "accepted"
+      ) {
+        get().markMessagesAsRead(selectedUserId);
+      }
     };
 
     const handleNewGroupMessage = (newMessage) => {
@@ -576,7 +638,7 @@ export const useChatStore = create((set, get) => ({
 
         const updatedGroup = {
           ...existingGroup,
-          lastMessage: newMessage.text || "",
+          lastMessage: newMessage.isUnsent ? "Message unsent" : newMessage.text || "",
           lastMessageHasImage: Boolean(newMessage.image),
           lastMessageAt: newMessage.createdAt,
           unreadCount: isOpenGroup
@@ -616,6 +678,66 @@ export const useChatStore = create((set, get) => ({
       });
     };
 
+    const handleMessageUpdated = (updatedMessage) => {
+      if (!updatedMessage?.messageId) {
+        return;
+      }
+
+      set((state) => ({
+        messages: state.messages.map((message) =>
+          String(message._id) === String(updatedMessage.messageId)
+            ? {
+                ...message,
+                ...updatedMessage,
+              }
+            : message
+        ),
+      }));
+
+      get().getMyChatPartners();
+      get().getGroups();
+    };
+
+    const handleMessageStatusUpdated = (payload) => {
+      if (!payload?.messageId) {
+        return;
+      }
+
+      set((state) => ({
+        messages: state.messages.map((message) =>
+          String(message._id) === String(payload.messageId)
+            ? {
+                ...message,
+                deliveredAt: payload.deliveredAt || message.deliveredAt,
+                readAt: payload.readAt || message.readAt,
+                status: payload.status || message.status,
+              }
+            : message
+        ),
+      }));
+    };
+
+    const handlePresenceUpdated = ({ userId, lastSeen }) => {
+      if (!userId) {
+        return;
+      }
+
+      set((state) => ({
+        selectedUser:
+          String(state.selectedUser?._id) === String(userId)
+            ? { ...state.selectedUser, lastSeen: lastSeen || state.selectedUser.lastSeen }
+            : state.selectedUser,
+        chats: state.chats.map((chat) =>
+          String(chat._id) === String(userId) ? { ...chat, lastSeen: lastSeen || chat.lastSeen } : chat
+        ),
+        allContacts: state.allContacts.map((contact) =>
+          String(contact._id) === String(userId)
+            ? { ...contact, lastSeen: lastSeen || contact.lastSeen }
+            : contact
+        ),
+      }));
+    };
+
     const handleRequestAccepted = ({ userId }) => {
       const { selectedUser } = get();
 
@@ -637,6 +759,12 @@ export const useChatStore = create((set, get) => ({
     socket.on("newMessage", handleNewMessage);
     socket.off("newGroupMessage");
     socket.on("newGroupMessage", handleNewGroupMessage);
+    socket.off("messageUpdated");
+    socket.on("messageUpdated", handleMessageUpdated);
+    socket.off("messageStatusUpdated");
+    socket.on("messageStatusUpdated", handleMessageStatusUpdated);
+    socket.off("userPresenceUpdated");
+    socket.on("userPresenceUpdated", handlePresenceUpdated);
     socket.off("requestAccepted");
     socket.on("requestAccepted", handleRequestAccepted);
     socket.off("groupInviteUpdated");
@@ -654,6 +782,9 @@ export const useChatStore = create((set, get) => ({
 
     socket.off("newMessage");
     socket.off("newGroupMessage");
+    socket.off("messageUpdated");
+    socket.off("messageStatusUpdated");
+    socket.off("userPresenceUpdated");
     socket.off("requestAccepted");
     socket.off("groupInviteUpdated");
     set({ messageListenerAttachedTo: null });

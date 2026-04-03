@@ -16,7 +16,7 @@ const arcjetProtection = require("../middleware/arcjet.middleware.js");
 // ================= AUTH =================
 router.post("/signup", signup);
 router.post("/login", login);
-router.post("/logout", logout);
+router.post("/logout", protectRoute, logout);
 
 // ================= USER =================
 

@@ -47,6 +47,22 @@ function ChatHeader() {
     !isGroupRequest &&
     String(selectedUser.creatorId?._id || selectedUser.creatorId) === String(authUser?._id);
   const isOnline = onlineUsers.map(String).includes(String(selectedUser._id));
+  const formatLastSeen = (value) => {
+    if (!value) {
+      return "Offline";
+    }
+
+    const date = new Date(value);
+    const today = new Date();
+    const isSameDay = date.toDateString() === today.toDateString();
+
+    return isSameDay
+      ? `Last seen today at ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+      : `Last seen ${date.toLocaleDateString([], {
+          day: "numeric",
+          month: "short",
+        })} at ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+  };
   const subtitle = isGroup
     ? isGroupRequest
       ? `Invitation from ${selectedUser.creatorId?.username || "group admin"}`
@@ -59,7 +75,7 @@ function ChatHeader() {
           ? "Blocked"
           : isOnline
             ? "Online"
-            : "Offline";
+            : formatLastSeen(selectedUser.lastSeen);
   const availableContacts = useMemo(() => {
     if (!isGroup) {
       return [];

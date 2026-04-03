@@ -30,6 +30,23 @@
   min-width: 0;
 }
 
+.message-date-divider {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 2px;
+}
+
+.message-date-divider span {
+  background: rgba(255, 255, 255, 0.9);
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 6px 18px rgba(148, 163, 184, 0.12);
+}
+
 .message-row.own {
   justify-content: flex-end;
 }
@@ -85,6 +102,11 @@
   word-break: break-word;
 }
 
+.message-text-unsent {
+  font-style: italic;
+  color: #64748b;
+}
+
 .message-sender-name {
   font-size: 12px;
   font-weight: 700;
@@ -99,10 +121,27 @@
 }
 
 /* Time */
-.message-time {
+.message-meta {
   font-size: 11px;
   color: #64748b;
   align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.message-status {
+  letter-spacing: -1px;
+  font-weight: 700;
+}
+
+.message-status-delivered,
+.message-status-sent {
+  color: #64748b;
+}
+
+.message-status-read {
+  color: #0ea5e9;
 }
 
 /* Empty State */

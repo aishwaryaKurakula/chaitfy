@@ -7,6 +7,7 @@ const {
 } = require("../emails/emailHandlers.js");
 const ENV = require("../lib/env.js");
 const cloudinary = require("cloudinary").v2;
+const { emitPresenceUpdate, updateUserLastSeen } = require("../lib/socket.js");
 
 /* ========================= SIGNUP ========================= */
 const signup = async (req, res) => {
@@ -67,6 +68,7 @@ const signup = async (req, res) => {
         username: newUser.username,
         email: newUser.email,
         profilePic: newUser.profilePic,
+        lastSeen: newUser.lastSeen,
       },
     });
   } catch (error) {
@@ -119,6 +121,7 @@ const login = async (req, res) => {
         username: user.username,
         email: user.email,
         profilePic: user.profilePic,
+        lastSeen: user.lastSeen,
       },
     });
   } catch (error) {
@@ -128,7 +131,17 @@ const login = async (req, res) => {
 };
 
 /* ========================= LOGOUT ========================= */
-const logout = async (_, res) => {
+const logout = async (req, res) => {
+  const userId = req.user?._id;
+
+  if (userId) {
+    const lastSeen = await updateUserLastSeen(userId);
+    emitPresenceUpdate(userId, {
+      isOnline: false,
+      lastSeen,
+    });
+  }
+
   res.cookie("jwt", "", {
     ...generateToken.getCookieOptions(),
     maxAge: 0,

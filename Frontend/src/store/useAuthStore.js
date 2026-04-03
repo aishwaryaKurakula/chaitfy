@@ -55,6 +55,7 @@ const useAuthStore = create((set, get) => ({
   isLoggingIn: false,
   isUpdatingProfile: false,
   onlineUsers: [],
+  userPresence: {},
   socket: null,
 
   init: () => {
@@ -164,7 +165,7 @@ const useAuthStore = create((set, get) => ({
     } finally {
       get().disconnectSocket();
       localStorage.removeItem("token");
-      set({ authUser: null, onlineUsers: [] });
+      set({ authUser: null, onlineUsers: [], userPresence: {} });
       toast.success("Logged out successfully");
     }
   },
@@ -282,6 +283,22 @@ const useAuthStore = create((set, get) => ({
       set({ onlineUsers: Array.isArray(users) ? users.map(String) : [] });
     });
 
+    socket.on("userPresenceUpdated", ({ userId, isOnline, lastSeen }) => {
+      if (!userId) {
+        return;
+      }
+
+      set((state) => ({
+        userPresence: {
+          ...state.userPresence,
+          [String(userId)]: {
+            isOnline: Boolean(isOnline),
+            lastSeen: lastSeen || null,
+          },
+        },
+      }));
+    });
+
     socket.on("disconnect", (reason) => {
       console.warn("Socket disconnected:", reason);
       set({ onlineUsers: [] });
@@ -304,7 +321,7 @@ const useAuthStore = create((set, get) => ({
 
     socket.removeAllListeners();
     socket.disconnect();
-    set({ socket: null, onlineUsers: [] });
+    set({ socket: null, onlineUsers: [], userPresence: {} });
   },
 }));
 

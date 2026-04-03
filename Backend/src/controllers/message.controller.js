@@ -1,11 +1,99 @@
 const Message = require("../models/message.js");
 const User = require("../models/User.js");
+const Group = require("../models/Group.js");
 const cloudinary = require("../lib/cloudinary");
 const mongoose = require("mongoose");
-const { emitToUser } = require("../lib/socket.js");
+const { emitToUser, getReceiverSocketId } = require("../lib/socket.js");
 
 function includesId(list = [], id) {
   return list.some((item) => String(item) === String(id));
+}
+
+function getDirectMessageStatus(message, authUserId) {
+  if (message.groupId) {
+    return null;
+  }
+
+  if (String(message.senderId) !== String(authUserId)) {
+    return null;
+  }
+
+  if (message.readAt) {
+    return "read";
+  }
+
+  if (message.deliveredAt) {
+    return "delivered";
+  }
+
+  return "sent";
+}
+
+function formatDirectMessage(message, authUserId) {
+  if (!message) {
+    return message;
+  }
+
+  const formatted = typeof message.toObject === "function" ? message.toObject() : { ...message };
+
+  if (formatted.isUnsent) {
+    formatted.text = "";
+    formatted.image = "";
+  }
+
+  formatted.status = getDirectMessageStatus(formatted, authUserId);
+  return formatted;
+}
+
+async function emitMessageStatusUpdate(messageId) {
+  const message = await Message.findById(messageId).lean();
+
+  if (!message || message.groupId) {
+    return;
+  }
+
+  emitToUser(message.senderId, "messageStatusUpdated", {
+    messageId: String(message._id),
+    deliveredAt: message.deliveredAt,
+    readAt: message.readAt,
+    status: getDirectMessageStatus(message, message.senderId),
+  });
+}
+
+async function markDirectMessagesAsRead({ senderId, receiverId }) {
+  const unreadMessages = await Message.find({
+    senderId,
+    receiverId,
+    groupId: null,
+    requestStatus: "accepted",
+    isUnsent: false,
+    $or: [{ deliveredAt: null }, { readAt: null }],
+  }).select("_id");
+
+  if (!unreadMessages.length) {
+    return;
+  }
+
+  const timestamp = new Date();
+
+  await Message.updateMany(
+    {
+      senderId,
+      receiverId,
+      groupId: null,
+      requestStatus: "accepted",
+      isUnsent: false,
+      $or: [{ deliveredAt: null }, { readAt: null }],
+    },
+    {
+      $set: {
+        deliveredAt: timestamp,
+        readAt: timestamp,
+      },
+    },
+  );
+
+  await Promise.all(unreadMessages.map((message) => emitMessageStatusUpdate(message._id)));
 }
 
 async function getUsersByPendingRequestReceiver(receiverId) {
@@ -37,7 +125,7 @@ async function getUsersByPendingRequestReceiver(receiverId) {
       return {
         ...sender,
         relationshipStatus: "pending_incoming",
-        lastMessage: latestMessage.text || "",
+        lastMessage: latestMessage.isUnsent ? "Message unsent" : latestMessage.text || "",
         lastMessageHasImage: Boolean(latestMessage.image),
         lastMessageAt: latestMessage.createdAt,
         unreadCount: pendingMessages.filter(
@@ -173,18 +261,10 @@ const getMessagesByUserId = async (req, res) => {
     const userToChatId = new mongoose.Types.ObjectId(id);
 
     if (relationshipStatus === "accepted") {
-      await Message.updateMany(
-        {
-          senderId: userToChatId,
-          receiverId: myId,
-          groupId: null,
-          readAt: null,
-          requestStatus: "accepted",
-        },
-        {
-          $set: { readAt: new Date() },
-        },
-      );
+      await markDirectMessagesAsRead({
+        senderId: userToChatId,
+        receiverId: myId,
+      });
     }
 
     const messages = await Message.find({
@@ -195,9 +275,12 @@ const getMessagesByUserId = async (req, res) => {
       ],
     }).sort({ createdAt: 1 });
 
+    const formattedMessages = messages.map((message) => formatDirectMessage(message, myId));
+
     res.status(200).json({
       relationshipStatus,
-      messages,
+      otherUser: await User.findById(id).select("_id username email profilePic lastSeen").lean(),
+      messages: formattedMessages,
     });
   } catch (error) {
     console.log("Error in getMessagesByUserId:", error);
@@ -261,13 +344,16 @@ const sendMessage = async (req, res) => {
       text,
       image: imageUrl,
       requestStatus,
+      deliveredAt:
+        requestStatus === "accepted" && getReceiverSocketId(receiverId) ? new Date() : null,
     });
     await newMessage.save();
 
-    emitToUser(receiverId, "newMessage", newMessage);
+    const formattedMessage = formatDirectMessage(newMessage, senderId);
+    emitToUser(receiverId, "newMessage", formatDirectMessage(newMessage, receiverId));
 
     res.status(201).json({
-      ...newMessage.toObject(),
+      ...formattedMessage,
       relationshipStatus: requestStatus === "accepted" ? "accepted" : "pending_outgoing",
     });
   } catch (error) {
@@ -293,6 +379,7 @@ const acceptMessageRequest = async (req, res) => {
       {
         $set: {
           requestStatus: "accepted",
+          deliveredAt: new Date(),
           readAt: new Date(),
         },
       }
@@ -424,14 +511,14 @@ const getChatPartners = async (req, res) => {
         return {
           ...user,
           relationshipStatus: "accepted",
-          lastMessage: latestMessage.text || "",
+          lastMessage: latestMessage.isUnsent ? "Message unsent" : latestMessage.text || "",
           lastMessageHasImage: Boolean(latestMessage.image),
           lastMessageAt: latestMessage.createdAt,
           unreadCount: messages.filter(
             (message) =>
               message.senderId.toString() === id &&
               message.receiverId.toString() === loggedInUserId.toString() &&
-              !message.readAt,
+              !message.readAt && !message.isUnsent,
           ).length,
         };
       })
@@ -440,6 +527,24 @@ const getChatPartners = async (req, res) => {
     res.status(200).json(orderedChatPartners);
   } catch (error) {
     console.error("Error in getChatPartners:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const markMessagesAsRead = async (req, res) => {
+  try {
+    const receiverId = req.user._id;
+    const { id: senderId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(senderId)) {
+      return res.status(400).json({ message: "Invalid user id" });
+    }
+
+    await markDirectMessagesAsRead({ senderId, receiverId });
+
+    res.status(200).json({ message: "Messages marked as read" });
+  } catch (error) {
+    console.error("Error marking messages as read:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -456,12 +561,40 @@ const deleteMessage = async (req, res) => {
     }
 
     if (message.senderId.toString() !== userId) {
-      return res.status(403).json({ message: "You can only delete your own messages" });
+      return res.status(403).json({ message: "You can only unsend your own messages" });
     }
 
-    await Message.findByIdAndDelete(id);
+    if (message.isUnsent) {
+      return res.status(400).json({ message: "Message already unsent" });
+    }
 
-    res.status(200).json({ message: "Message deleted successfully", messageId: id });
+    message.text = "";
+    message.image = "";
+    message.isUnsent = true;
+    message.unsentAt = new Date();
+    await message.save();
+
+    const payload = {
+      messageId: id,
+      text: "",
+      image: "",
+      isUnsent: true,
+      unsentAt: message.unsentAt,
+    };
+
+    if (message.groupId) {
+      const group = await Group.findById(message.groupId).select("members").lean();
+      if (group?.members?.length) {
+        group.members.forEach((memberId) => {
+          emitToUser(memberId, "messageUpdated", payload);
+        });
+      }
+    } else {
+      emitToUser(message.receiverId, "messageUpdated", payload);
+      emitToUser(message.senderId, "messageUpdated", payload);
+    }
+
+    res.status(200).json({ message: "Message unsent successfully", messageId: id, ...payload });
   } catch (error) {
     console.error("Error deleting message:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -478,6 +611,7 @@ module.exports = {
   rejectMessageRequest,
   blockUser,
   unblockUser,
+  markMessagesAsRead,
   deleteMessage,
   getChatPartners,
 };
