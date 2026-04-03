@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import useChatStore from "../../store/useChatStore";
 import useAuthStore from "../../store/useAuthStore";
 
@@ -15,7 +15,6 @@ function ChatList({
   suppressEmptyState = false,
 }) {
   const {
-    getMyChatPartners,
     chats = [],
     groups = [],
     requests = [],
@@ -25,10 +24,6 @@ function ChatList({
   } = useChatStore();
 
   const { onlineUsers = [] } = useAuthStore();
-
-  useEffect(() => {
-    getMyChatPartners();
-  }, [getMyChatPartners]);
 
   const filteredChats = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();

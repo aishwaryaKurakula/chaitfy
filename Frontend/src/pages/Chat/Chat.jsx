@@ -26,6 +26,7 @@ function Chat() {
     isRequestsLoading,
     isGroupInvitesLoading,
     getAllContacts,
+    getMyChatPartners,
     getGroups,
     getRequests,
     getGroupInvites,
@@ -44,12 +45,20 @@ function Chat() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    getMyChatPartners();
     getGroups();
     getAllContacts();
     getRequests();
     getGroupInvites();
     getBlockedUsers();
-  }, [getAllContacts, getBlockedUsers, getGroupInvites, getGroups, getRequests]);
+  }, [
+    getAllContacts,
+    getBlockedUsers,
+    getGroupInvites,
+    getGroups,
+    getMyChatPartners,
+    getRequests,
+  ]);
 
   useEffect(() => {
     const handleResize = () => {
