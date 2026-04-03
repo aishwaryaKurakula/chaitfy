@@ -1,9 +1,9 @@
 import React from "react";
 import { MdGroup } from "react-icons/md";
 import useChatStore from "../../store/useChatStore";
-import "./NoGroupsFound.css";
+import "./NoGroups.css";
 
-function NoGroupsFound() {
+function NoGroupsFound({ onCreateGroup }) {
   const { setActiveTab } = useChatStore();
 
   return (
@@ -20,7 +20,10 @@ function NoGroupsFound() {
 
       <button
         className="nogroup-button"
-        onClick={() => setActiveTab("contacts")}
+        onClick={() => {
+          setActiveTab("groups");
+          onCreateGroup?.();
+        }}
       >
         Create a group
       </button>
