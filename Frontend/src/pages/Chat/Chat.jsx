@@ -9,7 +9,7 @@ import ChatList from "../../components/ChatList/ChatList";
 import ContactList from "../../components/ContactList/ContactList";
 import ChatContainer from "../../components/ChatContainer/ChatContainer";
 import NoConversationPlaceholder from "../../components/NoCon/NoConversationPlaceholder";
-import NoGroupsFound from "../../components/Nogroups/NoGroups";
+import NoGroupsFound from "../../components/NoGroups/NoGroups";
 import useAuthStore from "../../store/useAuthStore";
 
 function Chat() {
