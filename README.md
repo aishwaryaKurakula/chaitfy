@@ -310,6 +310,4 @@ Contributions are welcome.
 4. Test your work
 5. Open a pull request
 
-## License
 
-This project is licensed under the MIT License if you choose to include one for the repository.
