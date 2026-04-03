@@ -10,6 +10,7 @@ import ContactList from "../../components/ContactList/ContactList";
 import ChatContainer from "../../components/ChatContainer/ChatContainer";
 import NoConversationPlaceholder from "../../components/NoCon/NoConversationPlaceholder";
 import NoGroupsFound from "../../components/NoGroups/NoGroups";
+import UsersLoadingSkeleton from "../../components/UsersLoadingSkeleton/UsersLoadingSkeleton";
 import useAuthStore from "../../store/useAuthStore";
 
 function Chat() {
@@ -20,6 +21,10 @@ function Chat() {
     groups,
     groupRequests,
     requests,
+    isUsersLoading,
+    isGroupsLoading,
+    isRequestsLoading,
+    isGroupInvitesLoading,
     getAllContacts,
     getGroups,
     getRequests,
@@ -77,6 +82,10 @@ function Chat() {
     );
   }, [groups, search]);
 
+  const isChatsViewLoading =
+    isUsersLoading || isGroupsLoading || isRequestsLoading || isGroupInvitesLoading;
+  const isGroupsViewLoading = isGroupsLoading || isGroupInvitesLoading;
+
   const handleToggleMember = (memberId) => {
     setSelectedMembers((current) =>
       current.includes(memberId)
@@ -111,9 +120,11 @@ function Chat() {
     }
   };
 
-  const renderGroupList = () => {
+  const renderGroupList = ({ showEmptyState = false } = {}) => {
     if (!filteredGroups.length) {
-      return <NoGroupsFound onCreateGroup={() => setIsGroupModalOpen(true)} />;
+      return showEmptyState ? (
+        <NoGroupsFound onCreateGroup={() => setIsGroupModalOpen(true)} />
+      ) : null;
     }
 
     return (
@@ -336,12 +347,20 @@ function Chat() {
           {isMobile ? (
             <div className="mobile-list-layout">
               {viewMode === "list" && mobileTab === "chats" ? (
-                <>
-                  {renderRequests()}
-                  {renderGroupRequests()}
-                  {renderGroupList()}
-                  <ChatList search={search} hideEmptyState sectionTitle="Recent chats" />
-                </>
+                isChatsViewLoading ? (
+                  <UsersLoadingSkeleton />
+                ) : (
+                  <>
+                    {renderRequests()}
+                    {renderGroupRequests()}
+                    {renderGroupList()}
+                    <ChatList
+                      search={search}
+                      suppressEmptyState={false}
+                      sectionTitle="Recent chats"
+                    />
+                  </>
+                )
               ) : null}
               {viewMode === "list" && mobileTab === "contacts" ? (
                 <ContactList search={search} hideEmptyState sectionTitle="All contacts" />
@@ -351,18 +370,26 @@ function Chat() {
 
           <div className="desktop-list-layout">
             {activeTab === "chats" ? (
-              <>
-                {renderRequests()}
-                {renderGroupRequests()}
-                {renderGroupList()}
-                <ChatList search={search} />
-              </>
+              isChatsViewLoading ? (
+                <UsersLoadingSkeleton />
+              ) : (
+                <>
+                  {renderRequests()}
+                  {renderGroupRequests()}
+                  {renderGroupList()}
+                  <ChatList search={search} />
+                </>
+              )
             ) : null}
             {activeTab === "groups" ? (
-              <>
-                {renderGroupRequests()}
-                {renderGroupList()}
-              </>
+              isGroupsViewLoading ? (
+                <UsersLoadingSkeleton />
+              ) : (
+                <>
+                  {renderGroupRequests()}
+                  {renderGroupList({ showEmptyState: groupRequests.length === 0 })}
+                </>
+              )
             ) : null}
             {activeTab === "contacts" ? <ContactList search={search} /> : null}
           </div>

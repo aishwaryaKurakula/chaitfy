@@ -7,7 +7,13 @@ import NoChatsFound from "../../components/NoChatsFound/NoChatsFound";
 
 import "./ChatList.css";
 
-function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
+function ChatList({
+  search = "",
+  hideEmptyState = false,
+  sectionTitle = "",
+  forceLoading = false,
+  suppressEmptyState = false,
+}) {
   const {
     getMyChatPartners,
     chats = [],
@@ -39,8 +45,11 @@ function ChatList({ search = "", hideEmptyState = false, sectionTitle = "" }) {
   const hasOtherConversationSections =
     requests.length > 0 || groupRequests.length > 0 || groups.length > 0;
 
-  if (isUsersLoading) return <UsersLoadingSkeleton />;
+  if (forceLoading || isUsersLoading) return <UsersLoadingSkeleton />;
   if (!filteredChats.length) {
+    if (suppressEmptyState) {
+      return null;
+    }
     if (hasOtherConversationSections) {
       return null;
     }

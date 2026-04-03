@@ -24,6 +24,9 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   relationshipStatus: "none",
   isUsersLoading: true,
+  isGroupsLoading: true,
+  isRequestsLoading: true,
+  isGroupInvitesLoading: true,
   isMessagesLoading: false,
   isCreatingGroup: false,
   messageListenerAttachedTo: null,
@@ -109,6 +112,8 @@ export const useChatStore = create((set, get) => ({
   },
 
   getGroups: async () => {
+    set({ isGroupsLoading: true });
+
     try {
       const res = await axiosInstance.get("/groups");
       set({ groups: Array.isArray(res.data) ? res.data : [] });
@@ -117,10 +122,14 @@ export const useChatStore = create((set, get) => ({
         toast.error(error.response?.data?.message || "Failed to load groups");
       }
       set({ groups: [] });
+    } finally {
+      set({ isGroupsLoading: false });
     }
   },
 
   getGroupInvites: async () => {
+    set({ isGroupInvitesLoading: true });
+
     try {
       const res = await axiosInstance.get("/groups/invites");
       set({ groupRequests: Array.isArray(res.data) ? res.data : [] });
@@ -129,10 +138,14 @@ export const useChatStore = create((set, get) => ({
         toast.error(error.response?.data?.message || "Failed to load group invites");
       }
       set({ groupRequests: [] });
+    } finally {
+      set({ isGroupInvitesLoading: false });
     }
   },
 
   getRequests: async () => {
+    set({ isRequestsLoading: true });
+
     try {
       const res = await axiosInstance.get("/messages/requests");
       set({ requests: Array.isArray(res.data) ? res.data : [] });
@@ -141,6 +154,8 @@ export const useChatStore = create((set, get) => ({
         toast.error(error.response?.data?.message || "Failed to load requests");
       }
       set({ requests: [] });
+    } finally {
+      set({ isRequestsLoading: false });
     }
   },
 
