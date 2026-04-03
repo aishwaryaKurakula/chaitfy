@@ -8,7 +8,6 @@ import MessagesLoadingSkeleton from "../../components/MessagesLoadingSkeleton/Me
 import "./ChatContainer.css";
 
 function ChatContainer() {
-
   const {
     selectedUser,
     messages = [],
@@ -24,10 +23,14 @@ function ChatContainer() {
 
   const messageEndRef = useRef(null);
   const pressTimerRef = useRef(null);
+  const actionMenuRef = useRef(null);
   const [messageActionTarget, setMessageActionTarget] = useState(null);
+  const [messageActionMode, setMessageActionMode] = useState(null);
+  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
   const selectedUserId = selectedUser?._id;
   const isGroupChat = Boolean(selectedUser?.isGroup || selectedUser?.groupId);
   const isGroupRequest = Boolean(selectedUser?.isGroupRequest);
+  const canShowMessageAction = (msg, isOwnMessage) => isOwnMessage && !msg.isOptimistic && !msg.isUnsent;
 
   const renderMessageStatus = (msg) => {
     if (selectedUser?.isGroup || selectedUser?.groupId || msg.isOptimistic || msg.isUnsent) {
@@ -97,6 +100,63 @@ function ChatContainer() {
     });
   }, [messages]);
 
+  useEffect(() => {
+    if (!messageActionTarget) {
+      return undefined;
+    }
+
+    const handleClickOutside = (event) => {
+      if (messageActionMode !== "context") {
+        return;
+      }
+
+      if (actionMenuRef.current && !actionMenuRef.current.contains(event.target)) {
+        setMessageActionTarget(null);
+        setMessageActionMode(null);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setMessageActionTarget(null);
+        setMessageActionMode(null);
+      }
+    };
+
+    window.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      window.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [messageActionMode, messageActionTarget]);
+
+  const closeMessageActions = () => {
+    setMessageActionTarget(null);
+    setMessageActionMode(null);
+  };
+
+  const openMobileMessageActions = (msg) => {
+    setMessageActionTarget(msg);
+    setMessageActionMode("sheet");
+  };
+
+  const openDesktopContextMenu = (event, msg) => {
+    const menuWidth = 180;
+    const menuHeight = 56;
+    const padding = 12;
+    const x = Math.min(event.clientX, window.innerWidth - menuWidth - padding);
+    const y = Math.min(event.clientY, window.innerHeight - menuHeight - padding);
+
+    setContextMenuPosition({
+      x: Math.max(padding, x),
+      y: Math.max(padding, y),
+    });
+    setMessageActionTarget(msg);
+    setMessageActionMode("context");
+  };
+
   if (!selectedUser) {
     return (
       <div className="no-chat-selected">
@@ -143,16 +203,22 @@ function ChatContainer() {
                 <div
                   className={`message-row ${isOwnMessage ? "own" : "other"}`}
                   onMouseDown={() => {
-                    if (!isOwnMessage || msg.isOptimistic) return;
-                    pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
+                    if (!canShowMessageAction(msg, isOwnMessage)) return;
+                    pressTimerRef.current = setTimeout(() => openMobileMessageActions(msg), 450);
                   }}
                   onMouseUp={() => clearTimeout(pressTimerRef.current)}
                   onMouseLeave={() => clearTimeout(pressTimerRef.current)}
                   onTouchStart={() => {
-                    if (!isOwnMessage || msg.isOptimistic) return;
-                    pressTimerRef.current = setTimeout(() => setMessageActionTarget(msg), 450);
+                    if (!canShowMessageAction(msg, isOwnMessage)) return;
+                    pressTimerRef.current = setTimeout(() => openMobileMessageActions(msg), 450);
                   }}
                   onTouchEnd={() => clearTimeout(pressTimerRef.current)}
+                  onContextMenu={(event) => {
+                    if (!canShowMessageAction(msg, isOwnMessage)) return;
+                    event.preventDefault();
+                    clearTimeout(pressTimerRef.current);
+                    openDesktopContextMenu(event, msg);
+                  }}
                 >
 
                   {!isOwnMessage && (
@@ -216,25 +282,43 @@ function ChatContainer() {
 
       <MessageInput />
 
-      {messageActionTarget ? (
-        <div className="message-action-backdrop" onClick={() => setMessageActionTarget(null)}>
+      {messageActionTarget && messageActionMode === "sheet" ? (
+        <div className="message-action-backdrop" onClick={closeMessageActions}>
           <div className="message-action-sheet" onClick={(e) => e.stopPropagation()}>
             <button
               className="message-delete-btn"
               onClick={async () => {
                 await deleteMessage(messageActionTarget._id);
-                setMessageActionTarget(null);
+                closeMessageActions();
               }}
             >
               Unsend message
             </button>
             <button
               className="message-cancel-btn"
-              onClick={() => setMessageActionTarget(null)}
+              onClick={closeMessageActions}
             >
               Cancel
             </button>
           </div>
+        </div>
+      ) : null}
+
+      {messageActionTarget && messageActionMode === "context" ? (
+        <div
+          ref={actionMenuRef}
+          className="message-context-menu"
+          style={{ top: contextMenuPosition.y, left: contextMenuPosition.x }}
+        >
+          <button
+            className="message-context-menu-item"
+            onClick={async () => {
+              await deleteMessage(messageActionTarget._id);
+              closeMessageActions();
+            }}
+          >
+            Unsend message
+          </button>
         </div>
       ) : null}
 

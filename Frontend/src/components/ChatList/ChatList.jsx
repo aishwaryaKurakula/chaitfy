@@ -20,7 +20,7 @@ function ChatList({
     groups = [],
     requests = [],
     groupRequests = [],
-    isUsersLoading,
+    isChatsLoading,
     setSelectedUser,
   } = useChatStore();
 
@@ -45,7 +45,7 @@ function ChatList({
   const hasOtherConversationSections =
     requests.length > 0 || groupRequests.length > 0 || groups.length > 0;
 
-  if (forceLoading || isUsersLoading) return <UsersLoadingSkeleton />;
+  if (forceLoading || isChatsLoading) return <UsersLoadingSkeleton />;
   if (!filteredChats.length) {
     if (suppressEmptyState) {
       return null;

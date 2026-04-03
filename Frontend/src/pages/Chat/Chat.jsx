@@ -21,7 +21,7 @@ function Chat() {
     groups,
     groupRequests,
     requests,
-    isUsersLoading,
+    isChatsLoading,
     isGroupsLoading,
     isRequestsLoading,
     isGroupInvitesLoading,
@@ -83,7 +83,7 @@ function Chat() {
   }, [groups, search]);
 
   const isChatsViewLoading =
-    isUsersLoading || isGroupsLoading || isRequestsLoading || isGroupInvitesLoading;
+    isChatsLoading || isGroupsLoading || isRequestsLoading || isGroupInvitesLoading;
   const isGroupsViewLoading = isGroupsLoading || isGroupInvitesLoading;
 
   const handleToggleMember = (memberId) => {

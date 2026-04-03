@@ -24,6 +24,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   relationshipStatus: "none",
   isUsersLoading: true,
+  isChatsLoading: true,
   isGroupsLoading: true,
   isRequestsLoading: true,
   isGroupInvitesLoading: true,
@@ -96,7 +97,7 @@ export const useChatStore = create((set, get) => ({
   },
 
   getMyChatPartners: async () => {
-    set({ isUsersLoading: true });
+    set({ isChatsLoading: true });
 
     try {
       const res = await axiosInstance.get("/messages/chats");
@@ -107,7 +108,7 @@ export const useChatStore = create((set, get) => ({
       }
       set({ chats: [] });
     } finally {
-      set({ isUsersLoading: false });
+      set({ isChatsLoading: false });
     }
   },
 
