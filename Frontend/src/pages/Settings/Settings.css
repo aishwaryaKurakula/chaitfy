@@ -144,10 +144,10 @@
 @media (max-width: 600px) {
   .settings-wrapper {
     width: calc(100% - 24px);
-    padding: 20px;
+    padding: 18px 16px;
     margin: 12px auto 96px;
     max-height: none;
-    min-height: calc(100dvh - 108px);
+    min-height: auto;
   }
 
   .profile-row {
@@ -170,31 +170,31 @@
 @media (max-width: 480px) {
   .settings-wrapper {
     width: 100%;
-    margin: 0 0 92px;
-    min-height: calc(100dvh - 92px);
+    margin: 0 0 82px;
+    min-height: auto;
     border-radius: 0;
-    padding: 16px 12px;
-    gap: 18px;
+    padding: 14px 10px;
+    gap: 14px;
   }
 
   .settings-title {
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    margin-bottom: 6px;
   }
 
   .settings-section {
-    padding: 18px 14px;
-    border-radius: 16px;
-    gap: 16px;
+    padding: 16px 12px;
+    border-radius: 14px;
+    gap: 14px;
   }
 
   .settings-section h3 {
-    font-size: 16px;
+    font-size: 15px;
     margin-bottom: 8px;
   }
 
   .profile-row {
-    gap: 14px;
+    gap: 12px;
   }
 
   .profile-row img {

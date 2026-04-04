@@ -28,13 +28,11 @@
   border-radius: 28px;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
   overflow: hidden;
-  max-height: calc(100dvh - 40px);
 }
 
 /* Layout */
 .login-content {
   display: flex;
-  min-height: min(700px, calc(100dvh - 40px));
 }
 
 /* LEFT SIDE (Clean Form) */
@@ -275,7 +273,7 @@
 @media (max-width: 768px) {
   .login-wrapper {
     padding: 12px;
-    align-items: stretch;
+    align-items: center;
   }
 
   .login-container {
@@ -284,25 +282,23 @@
     max-height: none;
     border-radius: 24px;
     box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
-    min-height: min(100dvh - 24px, 820px);
   }
 
   .login-content {
-    min-height: 100%;
     flex-direction: column;
   }
 
   .login-right {
     display: flex;
     order: 2;
-    padding: 22px 20px 26px;
-    min-height: 210px;
+    padding: 18px 20px 20px;
+    min-height: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   .login-left {
     order: 1;
-    padding: 30px 26px 24px;
+    padding: 26px 24px 18px;
   }
 
   .form-box {
@@ -312,7 +308,7 @@
 
 @media (max-width: 480px) {
   .login-wrapper {
-    padding: 0;
+    padding: 10px;
     background:
       radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 34%),
       linear-gradient(180deg, #eaf6ff 0%, #f8fbff 48%, #f3f7fb 100%);
@@ -320,15 +316,15 @@
 
   .login-container {
     width: 100%;
-    min-height: 100dvh;
-    border-radius: 0;
-    max-width: none;
-    box-shadow: none;
+    min-height: auto;
+    border-radius: 22px;
+    max-width: 100%;
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
   }
 
   .login-left {
     min-width: 0;
-    padding: 28px 20px 20px;
+    padding: 22px 18px 16px;
     align-items: flex-start;
   }
 
@@ -346,25 +342,25 @@
   }
 
   .form-heading {
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
 
   .form-heading .heading-icon {
-    font-size: 38px;
-    margin-bottom: 8px;
+    font-size: 32px;
+    margin-bottom: 6px;
   }
 
   .form-heading h2 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .form-heading p,
   .signup-link {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .login-form .form-group {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   .login-form label {
@@ -378,28 +374,28 @@
   }
 
   .login-right {
-    padding: 20px 18px 24px;
-    min-height: 172px;
+    padding: 16px 18px 18px;
+    min-height: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
   }
 
   .logo-box {
-    padding: 10px 14px;
+    padding: 8px 12px;
     border-radius: 14px;
   }
 
   .app-logo {
-    width: 82px;
-    margin-top: 12px;
+    width: 68px;
+    margin-top: 0;
   }
 
   .login-right h2 {
-    font-size: 22px;
-    margin-top: 14px;
+    font-size: 18px;
+    margin-top: 12px;
   }
 
   .login-right p {
-    font-size: 14px;
+    font-size: 12px;
   }
 }
 

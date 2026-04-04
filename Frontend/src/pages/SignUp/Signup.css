@@ -24,7 +24,6 @@
 .signup-container {
   width: 100%;
   max-width: 1000px;
-  max-height: calc(100dvh - 40px);
 }
 
 /* FLEX LAYOUT */
@@ -34,7 +33,6 @@
   overflow: hidden;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
   background: white;
-  min-height: min(700px, calc(100dvh - 40px));
 }
 
 /* LEFT SIDE (FORM) */
@@ -287,19 +285,17 @@
 @media (max-width: 900px) {
   .signup-wrapper {
     padding: 12px;
-    align-items: stretch;
+    align-items: center;
   }
 
   .signup-container {
     width: 100%;
     max-width: 520px;
     max-height: none;
-    min-height: min(100dvh - 24px, 860px);
   }
 
   .signup-content {
     flex-direction: column;
-    min-height: 100%;
     border-radius: 24px;
     box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
   }
@@ -307,13 +303,13 @@
   .signup-right {
     display: flex;
     order: 2;
-    min-height: 210px;
-    padding: 22px 20px 26px;
+    min-height: 0;
+    padding: 18px 20px 20px;
   }
 
   .signup-left {
     order: 1;
-    padding: 30px 26px 24px;
+    padding: 26px 24px 18px;
   }
 
   .form-box {
@@ -326,16 +322,16 @@
 /* MOBILE */
 @media (max-width: 480px) {
   .signup-wrapper {
-    padding: 0;
+    padding: 10px;
   }
 
   .signup-container {
-    max-width: none;
-    min-height: 100dvh;
+    max-width: 100%;
+    min-height: auto;
   }
 
   .signup-left {
-    padding: 28px 20px 20px;
+    padding: 22px 18px 16px;
     align-items: flex-start;
   }
 
@@ -353,7 +349,7 @@
   }
 
   .form-heading h2 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .submit-btn {
@@ -362,44 +358,40 @@
   }
 
   .heading-icon {
-    width: 38px;
-    height: 38px;
-    margin-bottom: 8px;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
   }
 
   .form-heading {
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
 
   .form-group label {
     font-size: 13px;
   }
 
-  .signup-wrapper {
-    padding: 8px;
-  }
-
   .signup-content {
-    border-radius: 0;
-    box-shadow: none;
+    border-radius: 22px;
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
   }
 
   .signup-right {
-    min-height: 172px;
-    padding: 20px 18px 24px;
+    min-height: 0;
+    padding: 16px 18px 18px;
   }
 
   .image-box {
-    padding: 10px 14px;
+    padding: 8px 12px;
     border-radius: 14px;
   }
 
   .image-box img {
-    width: 82px;
+    width: 68px;
   }
 
   .image-text h3 {
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .badge {

@@ -168,20 +168,54 @@
 /* Mobile */
 @media (max-width: 768px) {
   .contact-list-heading {
-    padding: 16px 14px 8px;
+    padding: 14px 12px 8px;
   }
 
   .contact-card {
-    height: 65px;
+    height: 60px;
     padding: 0 12px;
   }
 
   .avatar {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
   }
 
   .contact-name {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-list-heading {
+    padding: 12px 10px 6px;
+  }
+
+  .contact-card {
+    height: 56px;
+    padding: 0 10px;
+  }
+
+  .contact-content {
+    gap: 10px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .avatar::after {
+    width: 12px;
+    height: 12px;
+  }
+
+  .contact-name {
+    font-size: 13px;
+  }
+
+  .contact-status-tag {
+    padding: 3px 7px;
+    font-size: 10px;
   }
 }

@@ -173,20 +173,20 @@
 
 @media (max-width: 768px) {
   .chat-list-heading {
-    padding: 16px 14px 8px;
+    padding: 14px 12px 8px;
   }
 
   .chat-card {
-    padding: 12px 14px;
+    padding: 10px 12px;
   }
 
   .avatar {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
   }
 
   .chat-name {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .chat-preview {
@@ -196,5 +196,41 @@
   .avatar::after {
     width: 14px;
     height: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-list-heading {
+    padding: 12px 10px 6px;
+  }
+
+  .chat-card {
+    padding: 10px;
+  }
+
+  .chat-content {
+    gap: 8px;
+    min-height: 50px;
+  }
+
+  .avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .avatar::after {
+    width: 12px;
+    height: 12px;
+  }
+
+  .chat-name {
+    font-size: 13px;
+  }
+
+  .chat-time,
+  .chat-preview,
+  .chat-status-pill,
+  .chat-unread-badge {
+    font-size: 11px;
   }
 }
