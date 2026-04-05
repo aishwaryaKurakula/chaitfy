@@ -5,16 +5,34 @@ Chatify is a full-stack real-time chat application for direct messages and group
 ## Screenshots
 
 **Login**
-![Login Page](./screenshots/login.png)
+![Login Page](./screenshots/login%20page.png)
 
-**Signup**
-![Signup Page](./screenshots/signup.png)
+**Contacts**
+![Contacts Page](./screenshots/contact%20page.png)
+
+**Send message request**
+![Sending Request](./screenshots/sending%20request.png)
+
+**Accept message request**
+![Accepting Request](./screenshots/accepting%20request.png)
 
 **Start conversation**
 ![Start Conversation Page](./screenshots/startConversation.png)
 
 **Chat**
-![Chat Page](./screenshots/chatpage.png)
+![Chat Page](./screenshots/chat%20page.png)
+
+**Unsend option**
+![Unsend Option](./screenshots/unsend%20option.png)
+
+**Groups**
+![Groups Page](./screenshots/groups%20page.png)
+
+**Group features for admin**
+![Group Features For Admin](./screenshots/group%20features%20for%20admin.png)
+
+**Group features for users**
+![Group Features For Users](./screenshots/group%20features%20for%20users.png)
 
 ## Features
 
@@ -32,11 +50,15 @@ Chatify is a full-stack real-time chat application for direct messages and group
 - Real-time 1:1 messaging with Socket.IO
 - Send text messages and image messages
 - Message request flow for users who are not yet connected
+- Send a first message as a request before a conversation is accepted
 - Accept or reject incoming message requests
+- Pending outgoing request state with limited request-only messaging
 - Optimistic message sending for a smoother UI
 - Unsend your own messages
+- Context menu and long-press support for unsending messages
 - Sidebar chat previews with last message and last activity time
 - Search chats by username
+- Date dividers such as `Today` and `Yesterday` inside conversations
 
 ### Group chat
 
@@ -48,16 +70,21 @@ Chatify is a full-stack real-time chat application for direct messages and group
 - Send messages inside groups after accepting the invite
 - Add members to groups
 - Remove members from groups
-- Update group details
+- Rename groups from the manage panel
 - Leave groups
 - Group sidebar cards with unread counts and latest activity
 
 ### Message state and presence
 
 - Online user presence
+- Online and offline avatar indicators
 - Last seen tracking
+- Header subtitle that shows `Online`, `Offline`, or formatted last-seen time
+- Automatic refresh of presence details through Socket.IO events
+- Single tick for sent messages
 - Direct-message delivered state
 - Direct-message read state
+- Double ticks for delivered and read messages
 - Automatic mark-as-read when opening a conversation
 - Group read tracking with `readBy`
 - Unread badges for chats, requests, and groups
@@ -65,7 +92,7 @@ Chatify is a full-stack real-time chat application for direct messages and group
 ### Contact and moderation tools
 
 - Browse all contacts
-- Relationship status labels like connected, request, sent, blocked, and new
+- Relationship status badges like Connected, Request, Sent, Blocked, and New
 - Block users
 - Unblock users
 - Separate blocked users API support
@@ -111,24 +138,24 @@ Chatify is a full-stack real-time chat application for direct messages and group
 
 ```text
 chatify/
-├── Backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── lib/
-│   │   ├── middleware/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   └── server.js
-│   └── package.json
-├── Frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── lib/
-│   │   ├── pages/
-│   │   ├── store/
-│   │   └── main.jsx
-│   └── package.json
-└── README.md
+|-- Backend/
+|   |-- src/
+|   |   |-- controllers/
+|   |   |-- lib/
+|   |   |-- middleware/
+|   |   |-- models/
+|   |   |-- routes/
+|   |   `-- server.js
+|   `-- package.json
+|-- Frontend/
+|   |-- src/
+|   |   |-- components/
+|   |   |-- lib/
+|   |   |-- pages/
+|   |   |-- store/
+|   |   `-- main.jsx
+|   `-- package.json
+`-- README.md
 ```
 
 ## API Overview
@@ -309,5 +336,3 @@ Contributions are welcome.
 3. Make your changes
 4. Test your work
 5. Open a pull request
-
-
