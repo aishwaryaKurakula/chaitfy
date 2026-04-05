@@ -12,6 +12,74 @@ function isAuthError(error) {
   );
 }
 
+function normalizeComparableValue(value) {
+  return typeof value === "string" ? value.trim() : value || "";
+}
+
+function isSameMessageCandidate(existingMessage, incomingMessage, authUserId) {
+  if (!existingMessage?.isOptimistic || !incomingMessage || !authUserId) {
+    return false;
+  }
+
+  const existingSenderId = existingMessage.senderId?._id || existingMessage.senderId;
+  const incomingSenderId = incomingMessage.senderId?._id || incomingMessage.senderId;
+
+  if (String(existingSenderId) !== String(authUserId) || String(incomingSenderId) !== String(authUserId)) {
+    return false;
+  }
+
+  const existingGroupId = existingMessage.groupId?._id || existingMessage.groupId;
+  const incomingGroupId = incomingMessage.groupId?._id || incomingMessage.groupId;
+  const existingReceiverId = existingMessage.receiverId?._id || existingMessage.receiverId;
+  const incomingReceiverId = incomingMessage.receiverId?._id || incomingMessage.receiverId;
+
+  if (String(existingGroupId || "") !== String(incomingGroupId || "")) {
+    return false;
+  }
+
+  if (String(existingReceiverId || "") !== String(incomingReceiverId || "")) {
+    return false;
+  }
+
+  if (
+    normalizeComparableValue(existingMessage.text) !== normalizeComparableValue(incomingMessage.text) ||
+    normalizeComparableValue(existingMessage.image) !== normalizeComparableValue(incomingMessage.image)
+  ) {
+    return false;
+  }
+
+  const existingCreatedAt = new Date(existingMessage.createdAt).getTime();
+  const incomingCreatedAt = new Date(incomingMessage.createdAt).getTime();
+
+  if (Number.isNaN(existingCreatedAt) || Number.isNaN(incomingCreatedAt)) {
+    return false;
+  }
+
+  return Math.abs(existingCreatedAt - incomingCreatedAt) < 30000;
+}
+
+function upsertMessage(messages, incomingMessage, authUserId) {
+  const existingIndex = messages.findIndex(
+    (message) =>
+      String(message._id) === String(incomingMessage._id) ||
+      isSameMessageCandidate(message, incomingMessage, authUserId)
+  );
+
+  if (existingIndex === -1) {
+    return [...messages, incomingMessage];
+  }
+
+  return messages.map((message, index) =>
+    index === existingIndex
+      ? {
+          ...message,
+          ...incomingMessage,
+          isOptimistic: false,
+        }
+      : message
+  );
+}
+
 export const useChatStore = create((set, get) => ({
   allContacts: [],
   chats: [],
@@ -620,13 +688,9 @@ export const useChatStore = create((set, get) => ({
         return;
       }
 
-      set((state) => {
-        const alreadyExists = state.messages.some((message) => message._id === newMessage._id);
-        if (alreadyExists) {
-          return state;
-        }
-        return { messages: [...state.messages, newMessage] };
-      });
+      set((state) => ({
+        messages: upsertMessage(state.messages, newMessage, authUserId),
+      }));
 
       if (
         String(newMessage.senderId) === String(selectedUserId) &&
@@ -673,25 +737,19 @@ export const useChatStore = create((set, get) => ({
         return;
       }
 
-      set((state) => {
-        const alreadyExists = state.messages.some((message) => message._id === newMessage._id);
-        if (alreadyExists) {
-          return state;
-        }
-
-        return {
-          messages: [
-            ...state.messages,
-            {
-              ...newMessage,
-              readBy:
-                String(newMessage.senderId?._id || newMessage.senderId) === String(authUserId)
-                  ? newMessage.readBy
-                  : [...(newMessage.readBy || []), authUserId].filter(Boolean),
-            },
-          ],
-        };
-      });
+      set((state) => ({
+        messages: upsertMessage(
+          state.messages,
+          {
+            ...newMessage,
+            readBy:
+              String(newMessage.senderId?._id || newMessage.senderId) === String(authUserId)
+                ? newMessage.readBy
+                : [...(newMessage.readBy || []), authUserId].filter(Boolean),
+          },
+          authUserId
+        ),
+      }));
     };
 
     const handleMessageUpdated = (updatedMessage) => {

@@ -33,8 +33,10 @@ function Chat() {
     getBlockedUsers,
     createGroup,
     setSelectedUser,
+    subscribeToMessages,
+    unsubscribeFromMessages,
   } = useChatStore();
-  const { authUser, logout } = useAuthStore();
+  const { authUser, logout, socket } = useAuthStore();
   const [search, setSearch] = useState("");
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
   const [mobileTab, setMobileTab] = useState("chats");
@@ -73,6 +75,19 @@ function Chat() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  useEffect(() => {
+    if (!socket) {
+      unsubscribeFromMessages();
+      return undefined;
+    }
+
+    subscribeToMessages();
+
+    return () => {
+      unsubscribeFromMessages();
+    };
+  }, [socket, subscribeToMessages, unsubscribeFromMessages]);
 
   useEffect(() => {
     if (!isMobile) {

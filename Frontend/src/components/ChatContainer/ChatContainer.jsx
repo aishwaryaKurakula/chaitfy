@@ -14,8 +14,6 @@ function ChatContainer() {
     isMessagesLoading,
     getMessagesByUserId,
     getGroupMessages,
-    subscribeToMessages,
-    unsubscribeFromMessages,
     deleteMessage,
   } = useChatStore();
 
@@ -80,18 +78,6 @@ function ChatContainer() {
       getMessagesByUserId(selectedUserId);
     }
   }, [selectedUserId, isGroupChat, isGroupRequest, getGroupMessages, getMessagesByUserId]);
-
-  useEffect(() => {
-    if (!selectedUserId) {
-      return undefined;
-    }
-
-    subscribeToMessages();
-
-    return () => {
-      unsubscribeFromMessages();
-    };
-  }, [selectedUserId, subscribeToMessages, unsubscribeFromMessages]);
 
   /* Auto scroll to bottom */
   useEffect(() => {
